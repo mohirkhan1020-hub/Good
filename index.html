@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#e2136e">
 <title>bKash Lenden Manager</title>
 
-<!-- FIREBASE SDKs -->
+<!-- FIREBASE COMPAT SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
@@ -32,10 +32,11 @@
     padding:4px 9px; border-radius:14px; display:inline-flex; align-items:center; gap:4px;
   }
 
-  .container { padding:14px; max-width:1200px; margin:auto; }
+  .container { padding:14px; max-width:800px; margin:auto; }
   .page { display:none; }
   .page.active { display:block; }
 
+  /* BALANCE CARD */
   .balance-card {
     background: linear-gradient(135deg,#e2136e,#b8004f); color:#fff; border-radius:16px; padding:18px;
     margin-bottom:12px; box-shadow:0 6px 20px rgba(226,19,110,.3);
@@ -45,6 +46,7 @@
   .balance-card .sub { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px; font-size:11px; }
   .balance-card .sub div span { display:block; font-size:14px; font-weight:700; margin-top:2px; }
 
+  /* METHOD CARDS */
   .method-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; margin-bottom:14px; }
   .method-summary-card {
     background:#fff; border-radius:12px; padding:10px 12px;
@@ -58,31 +60,31 @@
   .method-summary-card .m-row { display:flex; justify-content:space-between; font-size:11px; color:#666; margin-top:2px; }
   .method-summary-card .m-row strong { color:#222; font-weight:700; }
 
+  /* QUICK CALC BUTTON */
   .quick-calc-trigger {
     background: linear-gradient(135deg, #1e3c72, #2a5298); color:#fff; border:none; width:100%; padding:12px 14px;
     border-radius:12px; font-size:13px; font-weight:700; cursor:pointer; display:flex; justify-content:space-between;
     margin-bottom:14px; box-shadow:0 3px 10px rgba(30,60,114,.25);
   }
 
+  /* ANALYTICS */
   .analytics-card { background:#fff; border-radius:14px; padding:14px; margin-bottom:14px; box-shadow:0 2px 8px rgba(0,0,0,.08); }
   .analytics-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-  .a-title { font-size:13px; font-weight:700; color:#222; }
-  .a-toggle { display:flex; background:#f0f2f5; border-radius:8px; padding:2px; }
-  .a-btn { border:none; background:transparent; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:700; color:#666; cursor:pointer; }
-  .a-btn.active { background:#fff; color:#e2136e; }
   .chart-container { position:relative; width:100%; height:130px; }
   #analyticsCanvas { width:100%; height:100%; display:block; }
 
-  .filter-pills { display:flex; gap:8px; margin-bottom:12px; overflow-x:auto; padding-bottom:4px; }
+  /* FILTERS & SEARCH */
+  .filter-pills { display:flex; gap:8px; margin-bottom:12px; overflow-x:auto; }
   .pill { padding:7px 13px; border:1px solid #ddd; background:#fff; border-radius:20px; font-size:11.5px; font-weight:700; color:#666; cursor:pointer; white-space:nowrap; }
   .pill.active { background:#e2136e; color:#fff; border-color:#e2136e; }
 
   .search-bar { display:flex; gap:8px; margin-bottom:12px; }
   .search-bar input { flex:1; padding:12px 14px; border:1px solid #ddd; border-radius:10px; font-size:15px; background:#fff; outline:none; }
 
-  .section-title { font-size:14px; color:#e2136e; font-weight:700; margin:14px 0 8px; display:flex; justify-content:space-between; align-items:center; }
+  .section-title { font-size:14px; color:#e2136e; font-weight:700; margin:14px 0 8px; display:flex; justify-content:space-between; }
   
-  .user-card { background:#fff; border-radius:14px; padding:14px; margin-bottom:10px; box-shadow:0 2px 8px rgba(0,0,0,.08); border-left:4px solid #e2136e; }
+  /* USER CARDS */
+  .user-card { background:#fff; border-radius:14px; padding:14px; margin-bottom:10px; box-shadow:0 2px 8px rgba(0,0,0,.08); border-left:4px solid #e2136e; cursor:pointer; }
   .user-card.clear { border-left-color:#28a745; }
   .user-card.due { border-left-color:#dc3545; }
   .user-card-header { display:flex; justify-content:space-between; margin-bottom:10px; }
@@ -97,22 +99,21 @@
   .val.lenden { color:#e2136e; } .val.paid { color:#28a745; } .val.due { color:#dc3545; }
 
   .user-card-actions { display:flex; gap:8px; margin-top:10px; }
-  .user-card-actions button, .user-card-actions a {
-    flex:1; padding:9px; border:none; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;
-    text-align:center; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;
-  }
+  .user-card-actions button, .user-card-actions a { flex:1; padding:9px; border:none; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer; text-align:center; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; }
   .btn-edit { background:#ff9800; color:#fff; }
   .btn-del { background:#dc3545; color:#fff; }
   .btn-wa { background:#25D366; color:#fff; }
 
-  .form-box { background:#fff; padding:18px; border-radius:14px; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+  /* FORMS */
+  .form-box { background:#fff; padding:18px; border-radius:14px; box-shadow:0 2px 8px rgba(0,0,0,.08); margin-bottom:14px; }
   .form-box h2 { font-size:16px; margin-bottom:14px; color:#e2136e; font-weight:700; }
   .form-grid { display:grid; grid-template-columns:1fr; gap:12px; }
   .form-grid input, .form-grid select { padding:12px 14px; border:1px solid #ddd; border-radius:10px; font-size:15px; width:100%; }
   .form-grid button { padding:14px; background:#e2136e; color:#fff; border:none; border-radius:10px; font-weight:700; font-size:16px; cursor:pointer; }
 
+  /* TRANSACTIONS */
   .bkash-tx { display:flex; align-items:center; gap:12px; padding:13px 14px; background:#fff; border-bottom:1px solid #f5f5f5; }
-  .bkash-icon { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; color:#fff; }
+  .bkash-icon { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; color:#fff; flex-shrink:0; }
   .bkash-icon.lenden { background:#e2136e; } .bkash-icon.paid { background:#28a745; }
   .bkash-info { flex:1; }
   .bkash-amount { font-weight:700; font-size:15px; text-align:right; }
@@ -120,11 +121,13 @@
   .user-detail-header { background:linear-gradient(135deg,#e2136e,#b8004f); color:#fff; border-radius:16px; padding:20px; text-align:center; margin-bottom:16px; }
   .user-detail-header .avatar { width:60px; height:60px; border-radius:50%; background:rgba(255,255,255,.25); margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:700; }
 
+  /* NAV BOTTOM */
   .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid #eee; display:flex; justify-content:space-around; padding:6px 0; z-index:100; }
   .bottom-nav button { background:none; border:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:2px; color:#888; font-size:10px; font-weight:600; flex:1; }
   .bottom-nav button.active { color:#e2136e; font-weight:700; }
   .bottom-nav button .ico { font-size:18px; }
 
+  /* MODALS */
   .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:1000; align-items:center; justify-content:center; padding:14px; }
   .modal-overlay.active { display:flex; }
   .modal-box { background:#fff; border-radius:18px; max-width:440px; width:100%; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,.3); }
@@ -135,10 +138,50 @@
   .calc-buttons-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px; }
   .calc-btn-pill { background:#1c355e; color:#fff; border:none; padding:10px; border-radius:20px; font-size:12px; font-weight:700; cursor:pointer; }
 
+  /* PIN LOCK */
+  .pin-overlay { position:fixed; inset:0; background:#f0f2f5; z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center; }
+  .pin-overlay.active { display:flex; }
+  .pin-box { background:#fff; border-radius:20px; padding:30px 24px; max-width:320px; width:100%; text-align:center; }
+  .pin-dots { display:flex; justify-content:center; gap:16px; margin:20px 0; }
+  .pin-dot { width:16px; height:16px; border-radius:50%; border:2px solid #ddd; }
+  .pin-dot.filled { background:#e2136e; border-color:#e2136e; }
+  .pin-pad { display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; max-width:230px; margin:auto; }
+  .pin-key { background:#f8f9fa; border:1px solid #eee; border-radius:50%; width:56px; height:56px; font-size:20px; font-weight:700; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+  .pin-key:active { background:#e2136e; color:#fff; }
+
   .empty-state { padding:35px 20px; text-align:center; color:#999; font-size:14px; background:#fff; border-radius:12px; }
 </style>
 </head>
 <body>
+
+<!-- PIN LOCK OVERLAY -->
+<div class="pin-overlay" id="pinOverlay">
+  <div class="pin-box">
+    <div style="font-size:32px;margin-bottom:8px;">🔒</div>
+    <h2 style="font-size:18px;">Security Lock</h2>
+    <p style="font-size:12px;color:#777;margin-top:4px;">৪ ডিজিটের পিন দিন</p>
+    <div class="pin-dots">
+      <div class="pin-dot" id="dot0"></div>
+      <div class="pin-dot" id="dot1"></div>
+      <div class="pin-dot" id="dot2"></div>
+      <div class="pin-dot" id="dot3"></div>
+    </div>
+    <div class="pin-pad">
+      <div class="pin-key" onclick="pressPin('1')">1</div>
+      <div class="pin-key" onclick="pressPin('2')">2</div>
+      <div class="pin-key" onclick="pressPin('3')">3</div>
+      <div class="pin-key" onclick="pressPin('4')">4</div>
+      <div class="pin-key" onclick="pressPin('5')">5</div>
+      <div class="pin-key" onclick="pressPin('6')">6</div>
+      <div class="pin-key" onclick="pressPin('7')">7</div>
+      <div class="pin-key" onclick="pressPin('8')">8</div>
+      <div class="pin-key" onclick="pressPin('9')">9</div>
+      <div class="pin-key" style="visibility:hidden;"></div>
+      <div class="pin-key" onclick="pressPin('0')">0</div>
+      <div class="pin-key" onclick="pressPin('DEL')" style="color:#e2136e;">⌫</div>
+    </div>
+  </div>
+</div>
 
 <div class="navbar">
   <div class="navbar-left">
@@ -164,7 +207,7 @@
     </div>
 
     <button class="quick-calc-trigger" onclick="openCalcModal()">
-      <span>🧮 রেট ক্যালকুলেটর (Quick Calc)</span>
+      <span>🧮 প্রতি হাজারে রেট ক্যালকুলেটর</span>
       <span>হিসাব করুন ➔</span>
     </button>
 
@@ -177,13 +220,7 @@
     </div>
 
     <div class="analytics-card">
-      <div class="analytics-header">
-        <div class="a-title">📊 ক্যাশফ্লো রিপোর্ট</div>
-        <div class="a-toggle">
-          <button class="a-btn active" id="btnChart7d" onclick="setChartRange('7d')">৭ দিন</button>
-          <button class="a-btn" id="btnChart6m" onclick="setChartRange('6m')">৬ মাস</button>
-        </div>
-      </div>
+      <div class="analytics-header"><span style="font-size:13px;font-weight:700;">📊 ক্যাশফ্লো রিপোর্ট (৭ দিন)</span></div>
       <div class="chart-container"><canvas id="analyticsCanvas"></canvas></div>
     </div>
 
@@ -209,7 +246,6 @@
         <input type="number" id="inLenden" placeholder="Lenden Amount ৳ (ধার)" inputmode="numeric">
         <input type="date" id="inDate">
         <select id="inMethod">
-          <option value="">-- Method --</option>
           <option value="bKash">📱 bKash</option>
           <option value="Nagad">🟠 Nagad</option>
           <option value="VIP">💜 VIP</option>
@@ -229,13 +265,25 @@
     <div id="txListFull"></div>
   </div>
 
-  <!-- PAGE 5: SETTINGS -->
+  <!-- PAGE 5: ACTIVITY LOG -->
+  <div class="page" id="pageLog">
+    <div class="section-title"><span>🔒 Activity Log</span></div>
+    <div id="logList"></div>
+  </div>
+
+  <!-- PAGE 6: SETTINGS -->
   <div class="page" id="pageSettings">
     <div class="section-title"><span>⚙️ Settings</span></div>
     <div class="form-box">
-      <div style="font-size:14px;font-weight:700;margin-bottom:8px;">🔥 Firebase Live Status</div>
-      <div style="font-size:12px;color:#666;margin-bottom:12px;">আপনার দেওয়া ক্লাউড ডাটাবেজ সরাসরি যুক্ত রয়েছে।</div>
-      <button onclick="forceSync()" style="background:#1e3c72;color:#fff;border:none;padding:12px;border-radius:10px;width:100%;font-weight:700;cursor:pointer;">⚡ Force Sync to Cloud</button>
+      <div style="font-weight:700;margin-bottom:4px;">🔥 Firebase Live Cloud</div>
+      <div style="font-size:12px;color:#666;margin-bottom:12px;">আপনার লাইভ ক্লাউড ডাটাবেজ সক্রিয় আছে।</div>
+      <button onclick="forceSync()" style="background:#1e3c72;color:#fff;border:none;padding:12px;border-radius:10px;width:100%;font-weight:700;">⚡ Force Push to Cloud</button>
+    </div>
+    <div class="form-box">
+      <div style="font-weight:700;margin-bottom:8px;">🔒 Security & Exports</div>
+      <button onclick="togglePinSetting()" style="width:100%;padding:10px;background:#f0f2f5;border:1px solid #ddd;border-radius:8px;font-weight:600;margin-bottom:8px;cursor:pointer;">🔑 Change PIN</button>
+      <button onclick="exportCSV()" style="width:100%;padding:10px;background:#f0f2f5;border:1px solid #ddd;border-radius:8px;font-weight:600;margin-bottom:8px;cursor:pointer;">📊 Export CSV / Print PDF</button>
+      <button onclick="deleteAllData()" style="width:100%;padding:10px;background:#fff0f2;color:#dc3545;border:1px solid #ffd2d6;border-radius:8px;font-weight:700;cursor:pointer;">🗑️ Delete All Data</button>
     </div>
   </div>
 </div>
@@ -244,6 +292,7 @@
   <button class="active" id="navHome" onclick="switchPage('home')"><span class="ico">🏠</span><span>Home</span></button>
   <button id="navAdd" onclick="switchPage('add')"><span class="ico">➕</span><span>Add</span></button>
   <button id="navTx" onclick="switchPage('tx')"><span class="ico">📱</span><span>Trans</span></button>
+  <button id="navLog" onclick="switchPage('log')"><span class="ico">🔒</span><span>Log</span></button>
   <button id="navSettings" onclick="switchPage('settings')"><span class="ico">⚙️</span><span>Settings</span></button>
 </div>
 
@@ -264,15 +313,16 @@
 <!-- MODAL: EDIT -->
 <div class="modal-overlay" id="editModal" onclick="if(event.target.id==='editModal') closeEditModal()">
   <div class="modal-box">
-    <h3 style="color:#e2136e;margin-bottom:12px;">✏️ এডিট / জমা দিন</h3>
+    <h3 style="color:#e2136e;margin-bottom:12px;">✏️ লেনদেন আপডেট করুন</h3>
+    <div id="editSummary" style="background:#fff2f6;padding:10px;border-radius:8px;font-size:12px;margin-bottom:12px;"></div>
     <div style="display:grid;gap:10px;">
       <input type="text" id="editName" placeholder="নাম">
       <input type="text" id="editMobile" placeholder="মোবাইল">
-      <div style="border-top:1px dashed #ddd;padding-top:8px;">
+      <div>
         <label style="font-size:11px;color:#e2136e;font-weight:700;">💸 নতুন ধার (+Lenden):</label>
         <input type="number" id="editAddLenden" value="0" style="width:100%;padding:10px;margin-top:4px;border:1px solid #ddd;border-radius:8px;">
       </div>
-      <div style="border-top:1px dashed #ddd;padding-top:8px;">
+      <div>
         <label style="font-size:11px;color:#28a745;font-weight:700;">✅ জমা নিন (+Payment):</label>
         <input type="number" id="editAddPaid" value="0" style="width:100%;padding:10px;margin-top:4px;border:1px solid #ddd;border-radius:8px;">
       </div>
@@ -282,8 +332,11 @@
       </div>
     </div>
   </div>
-</div><script>
-// আপনার দেওয়া FIREBASE CONFIG সরাসরি যুক্ত করা হয়েছে
+</div>
+ <script>
+// ==========================================
+// 1. FIREBASE CONFIG & LIVE 2-WAY SYNC
+// ==========================================
 const firebaseConfig = {
   apiKey: "AIzaSyCx5HpXJyq5Rd3t95TSjrBnieufrCOQ0IY",
   authDomain: "bkash-manager-b7757.firebaseapp.com",
@@ -296,12 +349,22 @@ const firebaseConfig = {
 
 let users = JSON.parse(localStorage.getItem('bkash_users') || '[]');
 let transactions = JSON.parse(localStorage.getItem('bkash_tx') || '[]');
-let currentFilter = 'all', chartRange = '7d', editId = null, currentPage = 'home', currentUserId = null, currentSelectedRate = 2.55;
-let fbDb = null, isRemoteSync = false;
+let activityLog = JSON.parse(localStorage.getItem('bkash_log_v2') || '[]');
+let appPin = localStorage.getItem('bkash_pin') || null;
+
+let currentFilter = 'all';
+let enteredPin = '';
+let editId = null;
+let currentPage = 'home';
+let currentUserId = null;
+let currentSelectedRate = 2.55;
+
+let fbDb = null;
+let isRemoteSync = false;
 
 function setCloudStatus(t, bg) {
   const el = document.getElementById('cloudStatusBadge');
-  if(el){ el.textContent = t; el.style.background = bg; }
+  if (el) { el.textContent = t; el.style.background = bg; }
 }
 
 function initFirebase() {
@@ -310,25 +373,27 @@ function initFirebase() {
     fbDb = firebase.database();
     
     fbDb.ref('.info/connected').on('value', s => {
-      if(s.val() === true) setCloudStatus('🟢 Live Connected', '#28a745');
+      if (s.val() === true) setCloudStatus('🟢 Live Sync', '#28a745');
       else setCloudStatus('🔴 Offline', '#dc3545');
     });
 
-    fbDb.ref('bkash_manager_data').on('value', snap => {
+    fbDb.ref('bkash_cloud_store').on('value', snap => {
       const val = snap.val();
-      if(val) {
+      if (val) {
         isRemoteSync = true;
-        if(Array.isArray(val.users)) users = val.users;
-        if(Array.isArray(val.transactions)) transactions = val.transactions;
+        if (Array.isArray(val.users)) users = val.users;
+        if (Array.isArray(val.transactions)) transactions = val.transactions;
+        if (Array.isArray(val.activityLog)) activityLog = val.activityLog;
         localStorage.setItem('bkash_users', JSON.stringify(users));
         localStorage.setItem('bkash_tx', JSON.stringify(transactions));
+        localStorage.setItem('bkash_log_v2', JSON.stringify(activityLog));
         render();
-        if(currentPage === 'tx') renderTx();
-        if(currentPage === 'userDetail') renderUserDetail();
+        if (currentPage === 'tx') renderTxPage();
+        if (currentPage === 'userDetail') renderUserDetail();
         setTimeout(() => { isRemoteSync = false; }, 200);
       }
     });
-  } catch(e) {
+  } catch (e) {
     setCloudStatus('⚠️ Init Error', '#dc3545');
   }
 }
@@ -336,86 +401,118 @@ function initFirebase() {
 function saveAll() {
   localStorage.setItem('bkash_users', JSON.stringify(users));
   localStorage.setItem('bkash_tx', JSON.stringify(transactions));
-  if(fbDb && !isRemoteSync) {
+  localStorage.setItem('bkash_log_v2', JSON.stringify(activityLog));
+  if (fbDb && !isRemoteSync) {
     setCloudStatus('☁️ Syncing...', '#17a2b8');
-    fbDb.ref('bkash_manager_data').set({
-      users, transactions, updatedAt: new Date().toISOString()
-    }).then(() => setCloudStatus('🟢 Live Connected', '#28a745'))
+    fbDb.ref('bkash_cloud_store').set({
+      users, transactions, activityLog, updatedAt: new Date().toISOString()
+    }).then(() => setCloudStatus('🟢 Live Sync', '#28a745'))
       .catch(() => setCloudStatus('⚠️ Rules Locked', '#dc3545'));
   }
 }
 
-function forceSync() { saveAll(); alert('ডাটা ক্লাউডে পাঠানো হয়েছে!'); }
+function forceSync() { saveAll(); alert('ডাটা ক্লাউডে সফলভাবে পাঠানো হয়েছে!'); }
 
+// ==========================================
+// 2. PAGE NAVIGATION SYSTEM
+// ==========================================
 function switchPage(p) {
   document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
   document.querySelectorAll('.bottom-nav button').forEach(x => x.classList.remove('active'));
   currentPage = p;
-  if(p === 'home') { document.getElementById('pageHome').classList.add('active'); document.getElementById('navHome').classList.add('active'); backBtn.classList.remove('show'); render(); }
-  if(p === 'add') { document.getElementById('pageAddUser').classList.add('active'); document.getElementById('navAdd').classList.add('active'); backBtn.classList.remove('show'); }
-  if(p === 'tx') { document.getElementById('pageTx').classList.add('active'); document.getElementById('navTx').classList.add('active'); backBtn.classList.remove('show'); renderTx(); }
-  if(p === 'settings') { document.getElementById('pageSettings').classList.add('active'); document.getElementById('navSettings').classList.add('active'); backBtn.classList.remove('show'); }
-  if(p === 'userDetail') { document.getElementById('pageUserDetail').classList.add('active'); backBtn.classList.add('show'); renderUserDetail(); }
+  if (p === 'home') { document.getElementById('pageHome').classList.add('active'); document.getElementById('navHome').classList.add('active'); backBtn.classList.remove('show'); render(); }
+  if (p === 'add') { document.getElementById('pageAddUser').classList.add('active'); document.getElementById('navAdd').classList.add('active'); backBtn.classList.remove('show'); }
+  if (p === 'tx') { document.getElementById('pageTx').classList.add('active'); document.getElementById('navTx').classList.add('active'); backBtn.classList.remove('show'); renderTxPage(); }
+  if (p === 'log') { document.getElementById('pageLog').classList.add('active'); document.getElementById('navLog').classList.add('active'); backBtn.classList.remove('show'); renderLog(); }
+  if (p === 'settings') { document.getElementById('pageSettings').classList.add('active'); document.getElementById('navSettings').classList.add('active'); backBtn.classList.remove('show'); }
+  if (p === 'userDetail') { document.getElementById('pageUserDetail').classList.add('active'); backBtn.classList.add('show'); renderUserDetail(); }
 }
 
 function goBack() { switchPage('home'); }
-function setFilter(f) { currentFilter = f; document.querySelectorAll('.filter-pills .pill').forEach(b => b.classList.remove('active')); if(f==='all') pillAll.classList.add('active'); if(f==='due') pillDue.classList.add('active'); if(f==='clear') pillClear.classList.add('active'); render(); }
 
+function setFilter(f) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-pills .pill').forEach(b => b.classList.remove('active'));
+  if (f === 'all') pillAll.classList.add('active');
+  if (f === 'due') pillDue.classList.add('active');
+  if (f === 'clear') pillClear.classList.add('active');
+  render();
+}
+
+// ==========================================
+// 3. USER MANAGEMENT (ADD, EDIT, DELETE)
+// ==========================================
 function addUser() {
-  const name = inName.value.trim(), mobile = inMobile.value.trim(), lenden = Number(inLenden.value) || 0, date = inDate.value || new Date().toISOString().slice(0,10), method = inMethod.value || 'bKash';
-  if(!name || !mobile) return alert('নাম ও মোবাইল দিন!');
-  if(users.find(u => u.mobile === mobile)) return alert('এই নম্বরটি আগেই যোগ করা আছে!');
-  
+  const name = inName.value.trim(), mobile = inMobile.value.trim(), lenden = Number(inLenden.value) || 0, date = inDate.value || new Date().toISOString().slice(0, 10), method = inMethod.value || 'bKash';
+  if (!name || !mobile) return alert('নাম ও মোবাইল দিন!');
+  if (users.find(u => u.mobile === mobile)) return alert('এই নম্বরটি আগেই আছে!');
+
   const id = Date.now();
-  users.push({ id, name, mobile, lenden, paid:0, method });
-  transactions.push({ id: id+1, userId: id, type:'lenden', amount:lenden, date, method, time: new Date().toLocaleTimeString() });
+  users.push({ id, name, mobile, lenden, paid: 0, method });
+  transactions.push({ id: id + 1, userId: id, type: 'lenden', amount: lenden, date, method, time: new Date().toLocaleTimeString() });
+  activityLog.push({ action: 'CREATE', name, details: `নতুন গ্রাহক: ৳${lenden}`, time: new Date().toLocaleTimeString() });
+
   saveAll(); render();
   inName.value = inMobile.value = inLenden.value = '';
   alert('✅ গ্রাহক যুক্ত হয়েছে!'); switchPage('home');
 }
 
-function openEdit(id) {
-  const u = users.find(x => x.id === id); if(!u) return;
+function openEditUser(id) {
+  const u = users.find(x => x.id === id); if (!u) return;
   editId = id; editName.value = u.name; editMobile.value = u.mobile;
   editAddLenden.value = 0; editAddPaid.value = 0;
+  const due = u.lenden - u.paid;
+  editSummary.innerHTML = `মোট ধার: ৳${u.lenden} | জমা: ৳${u.paid} | বাকি: <b style="color:#dc3545">৳${Math.max(0, due)}</b>`;
   editModal.classList.add('active');
 }
 function closeEditModal() { editModal.classList.remove('active'); }
 
 function saveEdit() {
-  const u = users.find(x => x.id === editId); if(!u) return;
+  const u = users.find(x => x.id === editId); if (!u) return;
   const addL = Number(editAddLenden.value) || 0, addP = Number(editAddPaid.value) || 0;
   u.name = editName.value.trim(); u.mobile = editMobile.value.trim();
-  const d = new Date().toISOString().slice(0,10), tm = new Date().toLocaleTimeString();
-  
-  if(addL > 0) { u.lenden += addL; transactions.push({ id: Date.now(), userId: u.id, type:'lenden', amount:addL, date:d, method:'bKash', time:tm }); }
-  if(addP > 0) { u.paid += addP; transactions.push({ id: Date.now()+1, userId: u.id, type:'paid', amount:addP, date:d, method:'bKash', time:tm }); }
+  const d = new Date().toISOString().slice(0, 10), tm = new Date().toLocaleTimeString();
+
+  if (addL > 0) {
+    u.lenden += addL;
+    transactions.push({ id: Date.now(), userId: u.id, type: 'lenden', amount: addL, date: d, method: 'bKash', time: tm });
+  }
+  if (addP > 0) {
+    u.paid += addP;
+    transactions.push({ id: Date.now() + 1, userId: u.id, type: 'paid', amount: addP, date: d, method: 'bKash', time: tm });
+  }
+
   saveAll(); render(); closeEditModal();
-  if(currentPage === 'userDetail') renderUserDetail();
+  if (currentPage === 'userDetail') renderUserDetail();
 }
 
 function deleteUser(id) {
-  if(!confirm('মুছে ফেলতে চান?')) return;
+  if (!confirm('মুছে ফেলতে চান?')) return;
   users = users.filter(x => x.id !== id);
   transactions = transactions.filter(x => x.userId !== id);
   saveAll(); render(); switchPage('home');
 }
 
+// ==========================================
+// 4. RENDERING & STATS
+// ==========================================
 function render() {
   const q = (search.value || '').toLowerCase();
   const filtered = users.filter(u => {
     const due = u.lenden - u.paid;
     const match = u.name.toLowerCase().includes(q) || u.mobile.includes(q);
-    if(!match) return false;
-    if(currentFilter === 'due') return due > 0;
-    if(currentFilter === 'clear') return due <= 0;
+    if (!match) return false;
+    if (currentFilter === 'due') return due > 0;
+    if (currentFilter === 'clear') return due <= 0;
     return true;
   });
 
   userCount.textContent = filtered.length;
   userList.innerHTML = filtered.map(u => {
     const due = u.lenden - u.paid;
-    const wa = `https://wa.me/88${u.mobile.replace(/[^0-9]/g,'')}?text=${encodeURIComponent(`বকেয়া: ৳${due}`)}`;
+    let num = u.mobile.replace(/[^0-9]/g, '');
+    if (num.startsWith('0')) num = '88' + num;
+    const wa = `https://wa.me/${num}?text=${encodeURIComponent(`বকেয়া: ৳${due}`)}`;
     return `
       <div class="user-card ${due <= 0 ? 'clear' : 'due'}">
         <div class="user-card-header" onclick="openDetail(${u.id})">
@@ -429,36 +526,39 @@ function render() {
         </div>
         <div class="user-card-actions">
           ${due > 0 ? `<a class="btn-wa" href="${wa}" target="_blank">💬 তাগাদা</a>` : ''}
-          <button class="btn-edit" onclick="openEdit(${u.id})">✏️ Edit</button>
+          <button class="btn-edit" onclick="openEditUser(${u.id})">✏️ Edit</button>
           <button class="btn-del" onclick="deleteUser(${u.id})">🗑️ Delete</button>
         </div>
       </div>
     `;
   }).join('') || '<div class="empty-state">কোনো গ্রাহক পাওয়া যায়নি</div>';
 
-  const tLenden = users.reduce((s,u) => s + u.lenden, 0);
-  const tPaid = users.reduce((s,u) => s + u.paid, 0);
-  cardLenden.textContent = '৳' + tLenden; cardPaid.textContent = '৳' + tPaid;
-  cardDue.textContent = '৳' + Math.max(0, tLenden - tPaid); cardUsers.textContent = users.length;
+  const tLenden = users.reduce((s, u) => s + u.lenden, 0);
+  const tPaid = users.reduce((s, u) => s + u.paid, 0);
+  cardLenden.textContent = '৳' + tLenden;
+  cardPaid.textContent = '৳' + tPaid;
+  cardDue.textContent = '৳' + Math.max(0, tLenden - tPaid);
+  cardUsers.textContent = users.length;
 
-  let m = { bKash:{l:0,p:0}, Nagad:{l:0,p:0}, VIP:{l:0,p:0}, Cash:{l:0,p:0} };
+  let m = { bKash: { l: 0, p: 0 }, Nagad: { l: 0, p: 0 }, VIP: { l: 0, p: 0 }, Cash: { l: 0, p: 0 } };
   transactions.forEach(t => {
-    if(m[t.method]) {
-      if(t.type==='lenden') m[t.method].l += t.amount;
-      if(t.type==='paid') m[t.method].p += t.amount;
+    if (m[t.method]) {
+      if (t.type === 'lenden') m[t.method].l += t.amount;
+      if (t.type === 'paid') m[t.method].p += t.amount;
     }
   });
-  mBkashLenden.textContent = '৳'+m.bKash.l; mBkashPaid.textContent = '৳'+m.bKash.p;
-  mNagadLenden.textContent = '৳'+m.Nagad.l; mNagadPaid.textContent = '৳'+m.Nagad.p;
-  mVipLenden.textContent = '৳'+m.VIP.l; mVipPaid.textContent = '৳'+m.VIP.p;
-  mCashLenden.textContent = '৳'+m.Cash.l; mCashPaid.textContent = '৳'+m.Cash.p;
+  mBkashLenden.textContent = '৳' + m.bKash.l; mBkashPaid.textContent = '৳' + m.bKash.p;
+  mNagadLenden.textContent = '৳' + m.Nagad.l; mNagadPaid.textContent = '৳' + m.Nagad.p;
+  mVipLenden.textContent = '৳' + m.VIP.l; mVipPaid.textContent = '৳' + m.VIP.p;
+  mCashLenden.textContent = '৳' + m.Cash.l; mCashPaid.textContent = '৳' + m.Cash.p;
 
   drawChart();
 }
 
 function openDetail(id) { currentUserId = id; switchPage('userDetail'); }
+
 function renderUserDetail() {
-  const u = users.find(x => x.id === currentUserId); if(!u) return switchPage('home');
+  const u = users.find(x => x.id === currentUserId); if (!u) return switchPage('home');
   const due = u.lenden - u.paid;
   const txs = transactions.filter(t => t.userId === u.id).reverse();
   userDetailContent.innerHTML = `
@@ -472,18 +572,18 @@ function renderUserDetail() {
       <div class="bkash-tx">
         <div class="bkash-icon ${t.type}">${t.type === 'lenden' ? '↓' : '↑'}</div>
         <div class="bkash-info">
-          <div style="font-weight:700;font-size:13px;">${t.type==='lenden'?'ধার গ্রহণ':'পরিশোধ/জমা'} (${t.method||'-'})</div>
-          <div style="font-size:11px;color:#888;">${t.date} · ${t.time||''}</div>
+          <div style="font-weight:700;font-size:13px;">${t.type === 'lenden' ? 'ধার গ্রহণ' : 'পরিশোধ/জমা'} (${t.method || '-'})</div>
+          <div style="font-size:11px;color:#888;">${t.date} · ${t.time || ''}</div>
         </div>
-        <div class="bkash-amount" style="color:${t.type==='lenden'?'#dc3545':'#28a745'}">
-          ${t.type==='lenden'?'-':'+'}৳${t.amount}
+        <div class="bkash-amount" style="color:${t.type === 'lenden' ? '#dc3545' : '#28a745'}">
+          ${t.type === 'lenden' ? '-' : '+'}৳${t.amount}
         </div>
       </div>
     `).join('') || '<div class="empty-state">কোনো লেনদেন নেই</div>'}
   `;
 }
 
-function renderTx() {
+function renderTxPage() {
   txListFull.innerHTML = transactions.slice().reverse().map(t => {
     const u = users.find(x => x.id === t.userId) || { name: 'Unknown' };
     return `
@@ -491,16 +591,29 @@ function renderTx() {
         <div class="bkash-icon ${t.type}">${t.type === 'lenden' ? '↓' : '↑'}</div>
         <div class="bkash-info">
           <div style="font-weight:700;font-size:13px;">${u.name}</div>
-          <div style="font-size:11px;color:#888;">${t.date} (${t.method||'-'})</div>
+          <div style="font-size:11px;color:#888;">${t.date} (${t.method || '-'})</div>
         </div>
-        <div class="bkash-amount" style="color:${t.type==='lenden'?'#dc3545':'#28a745'}">
-          ${t.type==='lenden'?'-':'+'}৳${t.amount}
+        <div class="bkash-amount" style="color:${t.type === 'lenden' ? '#dc3545' : '#28a745'}">
+          ${t.type === 'lenden' ? '-' : '+'}৳${t.amount}
         </div>
       </div>
     `;
   }).join('') || '<div class="empty-state">কোনো লেনদেন নেই</div>';
 }
 
+function renderLog() {
+  logList.innerHTML = activityLog.slice().reverse().map(l => `
+    <div style="background:#fff;padding:10px 14px;border-radius:10px;margin-bottom:8px;font-size:12px;">
+      <div style="display:flex;justify-content:space-between;color:#888;"><span>${l.action}</span><span>${l.time}</span></div>
+      <div style="font-weight:700;margin-top:2px;">${l.name}</div>
+      <div style="color:#555;">${l.details}</div>
+    </div>
+  `).join('') || '<div class="empty-state">কোনো লগ নেই</div>';
+}
+
+// ==========================================
+// 5. CALCULATOR & CASHFLOW CHART
+// ==========================================
 function openCalcModal() { calcModalOverlay.classList.add('active'); }
 function closeCalcModal() { calcModalOverlay.classList.remove('active'); }
 function applyPresetRate(r) { currentSelectedRate = r; calculateRate(); }
@@ -509,35 +622,28 @@ function calculateRate() {
   calcResultDisplay.textContent = (th * currentSelectedRate).toFixed(2);
 }
 
-function setChartRange(r) {
-  chartRange = r;
-  btnChart7d.classList.toggle('active', r === '7d');
-  btnChart6m.classList.toggle('active', r === '6m');
-  drawChart();
-}
-
 function drawChart() {
-  const canvas = analyticsCanvas; if(!canvas) return;
+  const canvas = analyticsCanvas; if (!canvas) return;
   const ctx = canvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
   canvas.width = canvas.clientWidth * dpr; canvas.height = canvas.clientHeight * dpr;
   ctx.scale(dpr, dpr);
   const w = canvas.clientWidth, h = canvas.clientHeight;
-  ctx.clearRect(0,0,w,h);
+  ctx.clearRect(0, 0, w, h);
 
   let data = [];
-  for(let i=6; i>=0; i--) {
+  for (let i = 6; i >= 0; i--) {
     let d = new Date(); d.setDate(d.getDate() - i);
-    let ds = d.toISOString().slice(0,10);
-    let l = transactions.filter(t => t.date === ds && t.type === 'lenden').reduce((s,x)=>s+x.amount, 0);
-    let p = transactions.filter(t => t.date === ds && t.type === 'paid').reduce((s,x)=>s+x.amount, 0);
-    data.push({ label: d.getDate()+'/'+(d.getMonth()+1), l, p });
+    let ds = d.toISOString().slice(0, 10);
+    let l = transactions.filter(t => t.date === ds && t.type === 'lenden').reduce((s, x) => s + x.amount, 0);
+    let p = transactions.filter(t => t.date === ds && t.type === 'paid').reduce((s, x) => s + x.amount, 0);
+    data.push({ label: d.getDate() + '/' + (d.getMonth() + 1), l, p });
   }
 
   const max = Math.max(...data.map(x => Math.max(x.l, x.p)), 100);
   const colW = (w - 20) / data.length;
   data.forEach((d, i) => {
-    const x = 10 + i * colW, barW = Math.max(4, colW/2 - 4);
+    const x = 10 + i * colW, barW = Math.max(4, colW / 2 - 4);
     const lh = (d.l / max) * (h - 30), ph = (d.p / max) * (h - 30);
     ctx.fillStyle = '#e2136e'; ctx.fillRect(x, h - 20 - lh, barW, lh);
     ctx.fillStyle = '#28a745'; ctx.fillRect(x + barW + 2, h - 20 - ph, barW, ph);
@@ -546,9 +652,51 @@ function drawChart() {
   });
 }
 
-inDate.value = new Date().toISOString().slice(0,10);
-initFirebase();
+// ==========================================
+// 6. PIN LOCK SECURITY
+// ==========================================
+function checkPinLock() {
+  if (appPin && sessionStorage.getItem('bkash_unlocked') !== 'true') pinOverlay.classList.add('active');
+  else pinOverlay.classList.remove('active');
+}
+
+function pressPin(d) {
+  if (d === 'DEL') enteredPin = enteredPin.slice(0, -1);
+  else if (enteredPin.length < 4) enteredPin += d;
+
+  for (let i = 0; i < 4; i++) document.getElementById('dot' + i).classList.toggle('filled', i < enteredPin.length);
+
+  if (enteredPin.length === 4) {
+    if (enteredPin === appPin) {
+      sessionStorage.setItem('bkash_unlocked', 'true');
+      pinOverlay.classList.remove('active');
+      enteredPin = '';
+    } else {
+      alert('❌ ভুল পিন!');
+      enteredPin = '';
+      for (let i = 0; i < 4; i++) document.getElementById('dot' + i).classList.remove('filled');
+    }
+  }
+}
+
+function togglePinSetting() {
+  const p = prompt('নতুন ৪ ডিজিটের পিন দিন (মুছতে চাইলে খালি রেখে OK দিন):');
+  if (p === '') { localStorage.removeItem('bkash_pin'); appPin = null; alert('পিন মুছে ফেলা হয়েছে!'); }
+  else if (p && p.length === 4) { appPin = p; localStorage.setItem('bkash_pin', p); alert('✅ পিন সেট হয়েছে!'); }
+}
+
+function exportCSV() { window.print(); }
+function deleteAllData() {
+  if (confirm('সব ডাটা মুছে ফেলতে চান?') && prompt('টাইপ করুন DELETE') === 'DELETE') {
+    users = []; transactions = []; activityLog = []; saveAll(); render();
+  }
+}
+
+// Startup
+inDate.value = new Date().toISOString().slice(0, 10);
+checkPinLock();
 render();
+initFirebase();
 </script>
 </body>
 </html>
