@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#e2136e">
+<title>bKash Lenden Manager</title>
+
+<!-- FIREBASE SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; -webkit-tap-highlight-color:transparent; }
+  body { background:#f0f2f5; color:#333; padding-bottom:70px; overflow-x:hidden; }
+  input, select, button { font-family:inherit; font-size:15px; }
+
+  .navbar {
+    background: linear-gradient(135deg,#e2136e,#b8004f);
+    color:#fff; padding:12px 16px; display:flex; justify-content:space-between; align-items:center;
+    position:sticky; top:0; z-index:100; box-shadow:0 2px 10px rgba(0,0,0,.2);
+  }
+  .navbar-left { display:flex; align-items:center; gap:8px; }
+  .navbar h1 { font-size:16px; font-weight:700; }
+  .navbar .back-btn {
+    background:rgba(255,255,255,.2); border:none; color:#fff; width:34px; height:34px;
+    border-radius:50%; font-size:18px; cursor:pointer; display:none; align-items:center; justify-content:center;
+  }
+  .navbar .back-btn.show { display:flex; }
+  .cloud-sync-badge {
+    font-size:11px; font-weight:700; background:rgba(255,255,255,.2);
+    padding:4px 9px; border-radius:14px; display:inline-flex; align-items:center; gap:4px;
+  }
+
+  .container { padding:14px; max-width:1200px; margin:auto; }
+  .page { display:none; }
+  .page.active { display:block; }
+
+  .balance-card {
+    background: linear-gradient(135deg,#e2136e,#b8004f); color:#fff; border-radius:16px; padding:18px;
+    margin-bottom:12px; box-shadow:0 6px 20px rgba(226,19,110,.3);
+  }
+  .balance-card h3 { font-size:12px; opacity:.9; }
+  .balance-card .big { font-size:28px; font-weight:700; margin:4px 0; }
+  .balance-card .sub { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px; font-size:11px; }
+  .balance-card .sub div span { display:block; font-size:14px; font-weight:700; margin-top:2px; }
+
+  .method-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; margin-bottom:14px; }
+  .method-summary-card {
+    background:#fff; border-radius:12px; padding:10px 12px;
+    box-shadow:0 2px 6px rgba(0,0,0,.05); border-left:3px solid #ccc;
+  }
+  .method-summary-card.bkash { border-left-color:#e2136e; }
+  .method-summary-card.nagad { border-left-color:#f6921e; }
+  .method-summary-card.vip { border-left-color:#6f42c1; }
+  .method-summary-card.cash { border-left-color:#28a745; }
+  .method-summary-card .m-head { display:flex; justify-content:space-between; font-size:12px; font-weight:700; margin-bottom:4px; }
+  .method-summary-card .m-row { display:flex; justify-content:space-between; font-size:11px; color:#666; margin-top:2px; }
+  .method-summary-card .m-row strong { color:#222; font-weight:700; }
+
+  .quick-calc-trigger {
+    background: linear-gradient(135deg, #1e3c72, #2a5298); color:#fff; border:none; width:100%; padding:12px 14px;
+    border-radius:12px; font-size:13px; font-weight:700; cursor:pointer; display:flex; justify-content:space-between;
+    margin-bottom:14px; box-shadow:0 3px 10px rgba(30,60,114,.25);
+  }
+
+  .analytics-card { background:#fff; border-radius:14px; padding:14px; margin-bottom:14px; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+  .analytics-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  .a-title { font-size:13px; font-weight:700; color:#222; }
+  .a-toggle { display:flex; background:#f0f2f5; border-radius:8px; padding:2px; }
+  .a-btn { border:none; background:transparent; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:700; color:#666; cursor:pointer; }
+  .a-btn.active { background:#fff; color:#e2136e; }
+  .chart-container { position:relative; width:100%; height:130px; }
+  #analyticsCanvas { width:100%; height:100%; display:block; }
+
+  .filter-pills { display:flex; gap:8px; margin-bottom:12px; overflow-x:auto; padding-bottom:4px; }
+  .pill { padding:7px 13px; border:1px solid #ddd; background:#fff; border-radius:20px; font-size:11.5px; font-weight:700; color:#666; cursor:pointer; white-space:nowrap; }
+  .pill.active { background:#e2136e; color:#fff; border-color:#e2136e; }
+
+  .search-bar { display:flex; gap:8px; margin-bottom:12px; }
+  .search-bar input { flex:1; padding:12px 14px; border:1px solid #ddd; border-radius:10px; font-size:15px; background:#fff; outline:none; }
+
+  .section-title { font-size:14px; color:#e2136e; font-weight:700; margin:14px 0 8px; display:flex; justify-content:space-between; align-items:center; }
+  
+  .user-card { background:#fff; border-radius:14px; padding:14px; margin-bottom:10px; box-shadow:0 2px 8px rgba(0,0,0,.08); border-left:4px solid #e2136e; }
+  .user-card.clear { border-left-color:#28a745; }
+  .user-card.due { border-left-color:#dc3545; }
+  .user-card-header { display:flex; justify-content:space-between; margin-bottom:10px; }
+  .user-card-header .name { font-weight:700; font-size:15px; }
+  .user-card-header .status { padding:3px 10px; border-radius:12px; font-size:11px; font-weight:700; }
+  .status.clear { background:#d4edda; color:#155724; }
+  .status.due { background:#f8d7da; color:#721c24; }
+
+  .user-card-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; background:#f8f9fa; border-radius:10px; padding:10px; text-align:center; }
+  .user-card-stats .label { font-size:10px; color:#888; }
+  .user-card-stats .val { font-size:14px; font-weight:700; margin-top:2px; }
+  .val.lenden { color:#e2136e; } .val.paid { color:#28a745; } .val.due { color:#dc3545; }
+
+  .user-card-actions { display:flex; gap:8px; margin-top:10px; }
+  .user-card-actions button, .user-card-actions a {
+    flex:1; padding:9px; border:none; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;
+    text-align:center; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;
+  }
+  .btn-edit { background:#ff9800; color:#fff; }
+  .btn-del { background:#dc3545; color:#fff; }
+  .btn-wa { background:#25D366; color:#fff; }
+
+  .form-box { background:#fff; padding:18px; border-radius:14px; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+  .form-box h2 { font-size:16px; margin-bottom:14px; color:#e2136e; font-weight:700; }
+  .form-grid { display:grid; grid-template-columns:1fr; gap:12px; }
+  .form-grid input, .form-grid select { padding:12px 14px; border:1px solid #ddd; border-radius:10px; font-size:15px; width:100%; }
+  .form-grid button { padding:14px; background:#e2136e; color:#fff; border:none; border-radius:10px; font-weight:700; font-size:16px; cursor:pointer; }
+
+  .bkash-tx { display:flex; align-items:center; gap:12px; padding:13px 14px; background:#fff; border-bottom:1px solid #f5f5f5; }
+  .bkash-icon { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; color:#fff; }
+  .bkash-icon.lenden { background:#e2136e; } .bkash-icon.paid { background:#28a745; }
+  .bkash-info { flex:1; }
+  .bkash-amount { font-weight:700; font-size:15px; text-align:right; }
+
+  .user-detail-header { background:linear-gradient(135deg,#e2136e,#b8004f); color:#fff; border-radius:16px; padding:20px; text-align:center; margin-bottom:16px; }
+  .user-detail-header .avatar { width:60px; height:60px; border-radius:50%; background:rgba(255,255,255,.25); margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:700; }
+
+  .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid #eee; display:flex; justify-content:space-around; padding:6px 0; z-index:100; }
+  .bottom-nav button { background:none; border:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:2px; color:#888; font-size:10px; font-weight:600; flex:1; }
+  .bottom-nav button.active { color:#e2136e; font-weight:700; }
+  .bottom-nav button .ico { font-size:18px; }
+
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:1000; align-items:center; justify-content:center; padding:14px; }
+  .modal-overlay.active { display:flex; }
+  .modal-box { background:#fff; border-radius:18px; max-width:440px; width:100%; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,.3); }
+
+  .calc-input { width:100%; padding:12px; border:2px solid #1e3c72; border-radius:12px; font-size:16px; font-weight:600; margin-bottom:12px; }
+  .calc-result-box { border:2px dashed #1e3c72; border-radius:14px; padding:14px; text-align:center; margin-bottom:12px; }
+  .calc-result-box .c-val { font-size:28px; font-weight:800; color:#1e3c72; }
+  .calc-buttons-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px; }
+  .calc-btn-pill { background:#1c355e; color:#fff; border:none; padding:10px; border-radius:20px; font-size:12px; font-weight:700; cursor:pointer; }
+
+  .empty-state { padding:35px 20px; text-align:center; color:#999; font-size:14px; background:#fff; border-radius:12px; }
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-left">
+    <button class="back-btn" id="backBtn" onclick="goBack()">←</button>
+    <h1 id="navTitle">💰 bKash Manager</h1>
+  </div>
+  <div class="navbar-right">
+    <div class="cloud-sync-badge" id="cloudStatusBadge">☁️ অফলাইন</div>
+  </div>
+</div>
+
+<div class="container">
+  <!-- PAGE 1: HOME -->
+  <div class="page active" id="pageHome">
+    <div class="balance-card">
+      <h3>Total Due (মোট বাকি)</h3>
+      <div class="big" id="cardDue">৳0</div>
+      <div class="sub">
+        <div>Lenden<span id="cardLenden">৳0</span></div>
+        <div>Paid<span id="cardPaid">৳0</span></div>
+        <div>Users<span id="cardUsers">0</span></div>
+      </div>
+    </div>
+
+    <button class="quick-calc-trigger" onclick="openCalcModal()">
+      <span>🧮 রেট ক্যালকুলেটর (Quick Calc)</span>
+      <span>হিসাব করুন ➔</span>
+    </button>
+
+    <div class="section-title"><span>💳 মেথড অনুযায়ী হিসাব</span></div>
+    <div class="method-grid">
+      <div class="method-summary-card bkash"><div class="m-head" style="color:#e2136e;"><span>📱 bKash</span></div><div class="m-row"><span>লেনদেন:</span><strong id="mBkashLenden">৳0</strong></div><div class="m-row"><span>জমা:</span><strong id="mBkashPaid" style="color:#28a745;">৳0</strong></div></div>
+      <div class="method-summary-card nagad"><div class="m-head" style="color:#f6921e;"><span>🟠 Nagad</span></div><div class="m-row"><span>লেনদেন:</span><strong id="mNagadLenden">৳0</strong></div><div class="m-row"><span>জমা:</span><strong id="mNagadPaid" style="color:#28a745;">৳0</strong></div></div>
+      <div class="method-summary-card vip"><div class="m-head" style="color:#6f42c1;"><span>💜 VIP</span></div><div class="m-row"><span>লেনদেন:</span><strong id="mVipLenden">৳0</strong></div><div class="m-row"><span>জমা:</span><strong id="mVipPaid" style="color:#28a745;">৳0</strong></div></div>
+      <div class="method-summary-card cash"><div class="m-head" style="color:#28a745;"><span>💵 Cash</span></div><div class="m-row"><span>লেনদেন:</span><strong id="mCashLenden">৳0</strong></div><div class="m-row"><span>জমা:</span><strong id="mCashPaid" style="color:#28a745;">৳0</strong></div></div>
+    </div>
+
+    <div class="analytics-card">
+      <div class="analytics-header">
+        <div class="a-title">📊 ক্যাশফ্লো রিপোর্ট</div>
+        <div class="a-toggle">
+          <button class="a-btn active" id="btnChart7d" onclick="setChartRange('7d')">৭ দিন</button>
+          <button class="a-btn" id="btnChart6m" onclick="setChartRange('6m')">৬ মাস</button>
+        </div>
+      </div>
+      <div class="chart-container"><canvas id="analyticsCanvas"></canvas></div>
+    </div>
+
+    <div class="search-bar"><input type="text" id="search" placeholder="🔍 নাম বা মোবাইল দিয়ে খুঁজুন..." oninput="render()"></div>
+
+    <div class="filter-pills">
+      <button class="pill active" id="pillAll" onclick="setFilter('all')">👥 সবাই (0)</button>
+      <button class="pill" id="pillDue" onclick="setFilter('due')">⚠️ বাকি আছে (0)</button>
+      <button class="pill" id="pillClear" onclick="setFilter('clear')">✅ পরিশোধিত (0)</button>
+    </div>
+
+    <div class="section-title"><span>👥 গ্রাহকদের তালিকা</span><span class="count" id="userCount">0</span></div>
+    <div id="userList"></div>
+  </div>
+
+  <!-- PAGE 2: ADD USER -->
+  <div class="page" id="pageAddUser">
+    <div class="form-box">
+      <h2>➕ নতুন User যোগ করুন</h2>
+      <div class="form-grid">
+        <input type="text" id="inName" placeholder="User Name (নাম)">
+        <input type="text" id="inMobile" placeholder="Mobile Number (মোবাইল)" inputmode="numeric">
+        <input type="number" id="inLenden" placeholder="Lenden Amount ৳ (ধার)" inputmode="numeric">
+        <input type="date" id="inDate">
+        <select id="inMethod">
+          <option value="">-- Method --</option>
+          <option value="bKash">📱 bKash</option>
+          <option value="Nagad">🟠 Nagad</option>
+          <option value="VIP">💜 VIP</option>
+          <option value="Cash">💵 Cash</option>
+        </select>
+        <button onclick="addUser()">Save User</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 3: USER DETAIL -->
+  <div class="page" id="pageUserDetail"><div id="userDetailContent"></div></div>
+
+  <!-- PAGE 4: TRANSACTIONS -->
+  <div class="page" id="pageTx">
+    <div class="section-title"><span>📱 All Transactions</span></div>
+    <div id="txListFull"></div>
+  </div>
+
+  <!-- PAGE 5: SETTINGS -->
+  <div class="page" id="pageSettings">
+    <div class="section-title"><span>⚙️ Settings</span></div>
+    <div class="form-box">
+      <div style="font-size:14px;font-weight:700;margin-bottom:8px;">🔥 Firebase Live Status</div>
+      <div style="font-size:12px;color:#666;margin-bottom:12px;">আপনার দেওয়া ক্লাউড ডাটাবেজ সরাসরি যুক্ত রয়েছে।</div>
+      <button onclick="forceSync()" style="background:#1e3c72;color:#fff;border:none;padding:12px;border-radius:10px;width:100%;font-weight:700;cursor:pointer;">⚡ Force Sync to Cloud</button>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <button class="active" id="navHome" onclick="switchPage('home')"><span class="ico">🏠</span><span>Home</span></button>
+  <button id="navAdd" onclick="switchPage('add')"><span class="ico">➕</span><span>Add</span></button>
+  <button id="navTx" onclick="switchPage('tx')"><span class="ico">📱</span><span>Trans</span></button>
+  <button id="navSettings" onclick="switchPage('settings')"><span class="ico">⚙️</span><span>Settings</span></button>
+</div>
+
+<!-- MODAL: CALC -->
+<div class="modal-overlay" id="calcModalOverlay" onclick="if(event.target.id==='calcModalOverlay') closeCalcModal()">
+  <div class="modal-box">
+    <h3 style="margin-bottom:12px;">🧮 প্রতি হাজারে হিসাব</h3>
+    <input type="number" id="calcThousandInput" class="calc-input" placeholder="যেমন: 5" inputmode="decimal" oninput="calculateRate()">
+    <div class="calc-result-box"><div class="c-val" id="calcResultDisplay">০.০০</div></div>
+    <div class="calc-buttons-grid">
+      <button class="calc-btn-pill" onclick="applyPresetRate(2.55)">২.৫৫</button>
+      <button class="calc-btn-pill" onclick="applyPresetRate(2.60)">২.৬০</button>
+    </div>
+    <button onclick="closeCalcModal()" style="width:100%;padding:10px;background:#eee;border:none;border-radius:10px;cursor:pointer;font-weight:700;">Close</button>
+  </div>
+</div>
+
+<!-- MODAL: EDIT -->
+<div class="modal-overlay" id="editModal" onclick="if(event.target.id==='editModal') closeEditModal()">
+  <div class="modal-box">
+    <h3 style="color:#e2136e;margin-bottom:12px;">✏️ এডিট / জমা দিন</h3>
+    <div style="display:grid;gap:10px;">
+      <input type="text" id="editName" placeholder="নাম">
+      <input type="text" id="editMobile" placeholder="মোবাইল">
+      <div style="border-top:1px dashed #ddd;padding-top:8px;">
+        <label style="font-size:11px;color:#e2136e;font-weight:700;">💸 নতুন ধার (+Lenden):</label>
+        <input type="number" id="editAddLenden" value="0" style="width:100%;padding:10px;margin-top:4px;border:1px solid #ddd;border-radius:8px;">
+      </div>
+      <div style="border-top:1px dashed #ddd;padding-top:8px;">
+        <label style="font-size:11px;color:#28a745;font-weight:700;">✅ জমা নিন (+Payment):</label>
+        <input type="number" id="editAddPaid" value="0" style="width:100%;padding:10px;margin-top:4px;border:1px solid #ddd;border-radius:8px;">
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button onclick="closeEditModal()" style="flex:1;padding:11px;border:none;background:#ddd;border-radius:8px;">Cancel</button>
+        <button onclick="saveEdit()" style="flex:1;padding:11px;border:none;background:#e2136e;color:#fff;border-radius:8px;font-weight:700;">Save</button>
+      </div>
+    </div>
+  </div>
+</div><script>
+// আপনার দেওয়া FIREBASE CONFIG সরাসরি যুক্ত করা হয়েছে
+const firebaseConfig = {
+  apiKey: "AIzaSyCx5HpXJyq5Rd3t95TSjrBnieufrCOQ0IY",
+  authDomain: "bkash-manager-b7757.firebaseapp.com",
+  databaseURL: "https://bkash-manager-b7757-default-rtdb.firebaseio.com",
+  projectId: "bkash-manager-b7757",
+  storageBucket: "bkash-manager-b7757.firebasestorage.app",
+  messagingSenderId: "719290502760",
+  appId: "1:719290502760:web:1f716941ae7ceb8de4b5dd"
+};
+
+let users = JSON.parse(localStorage.getItem('bkash_users') || '[]');
+let transactions = JSON.parse(localStorage.getItem('bkash_tx') || '[]');
+let currentFilter = 'all', chartRange = '7d', editId = null, currentPage = 'home', currentUserId = null, currentSelectedRate = 2.55;
+let fbDb = null, isRemoteSync = false;
+
+function setCloudStatus(t, bg) {
+  const el = document.getElementById('cloudStatusBadge');
+  if(el){ el.textContent = t; el.style.background = bg; }
+}
+
+function initFirebase() {
+  try {
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    fbDb = firebase.database();
+    
+    fbDb.ref('.info/connected').on('value', s => {
+      if(s.val() === true) setCloudStatus('🟢 Live Connected', '#28a745');
+      else setCloudStatus('🔴 Offline', '#dc3545');
+    });
+
+    fbDb.ref('bkash_manager_data').on('value', snap => {
+      const val = snap.val();
+      if(val) {
+        isRemoteSync = true;
+        if(Array.isArray(val.users)) users = val.users;
+        if(Array.isArray(val.transactions)) transactions = val.transactions;
+        localStorage.setItem('bkash_users', JSON.stringify(users));
+        localStorage.setItem('bkash_tx', JSON.stringify(transactions));
+        render();
+        if(currentPage === 'tx') renderTx();
+        if(currentPage === 'userDetail') renderUserDetail();
+        setTimeout(() => { isRemoteSync = false; }, 200);
+      }
+    });
+  } catch(e) {
+    setCloudStatus('⚠️ Init Error', '#dc3545');
+  }
+}
+
+function saveAll() {
+  localStorage.setItem('bkash_users', JSON.stringify(users));
+  localStorage.setItem('bkash_tx', JSON.stringify(transactions));
+  if(fbDb && !isRemoteSync) {
+    setCloudStatus('☁️ Syncing...', '#17a2b8');
+    fbDb.ref('bkash_manager_data').set({
+      users, transactions, updatedAt: new Date().toISOString()
+    }).then(() => setCloudStatus('🟢 Live Connected', '#28a745'))
+      .catch(() => setCloudStatus('⚠️ Rules Locked', '#dc3545'));
+  }
+}
+
+function forceSync() { saveAll(); alert('ডাটা ক্লাউডে পাঠানো হয়েছে!'); }
+
+function switchPage(p) {
+  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.bottom-nav button').forEach(x => x.classList.remove('active'));
+  currentPage = p;
+  if(p === 'home') { document.getElementById('pageHome').classList.add('active'); document.getElementById('navHome').classList.add('active'); backBtn.classList.remove('show'); render(); }
+  if(p === 'add') { document.getElementById('pageAddUser').classList.add('active'); document.getElementById('navAdd').classList.add('active'); backBtn.classList.remove('show'); }
+  if(p === 'tx') { document.getElementById('pageTx').classList.add('active'); document.getElementById('navTx').classList.add('active'); backBtn.classList.remove('show'); renderTx(); }
+  if(p === 'settings') { document.getElementById('pageSettings').classList.add('active'); document.getElementById('navSettings').classList.add('active'); backBtn.classList.remove('show'); }
+  if(p === 'userDetail') { document.getElementById('pageUserDetail').classList.add('active'); backBtn.classList.add('show'); renderUserDetail(); }
+}
+
+function goBack() { switchPage('home'); }
+function setFilter(f) { currentFilter = f; document.querySelectorAll('.filter-pills .pill').forEach(b => b.classList.remove('active')); if(f==='all') pillAll.classList.add('active'); if(f==='due') pillDue.classList.add('active'); if(f==='clear') pillClear.classList.add('active'); render(); }
+
+function addUser() {
+  const name = inName.value.trim(), mobile = inMobile.value.trim(), lenden = Number(inLenden.value) || 0, date = inDate.value || new Date().toISOString().slice(0,10), method = inMethod.value || 'bKash';
+  if(!name || !mobile) return alert('নাম ও মোবাইল দিন!');
+  if(users.find(u => u.mobile === mobile)) return alert('এই নম্বরটি আগেই যোগ করা আছে!');
+  
+  const id = Date.now();
+  users.push({ id, name, mobile, lenden, paid:0, method });
+  transactions.push({ id: id+1, userId: id, type:'lenden', amount:lenden, date, method, time: new Date().toLocaleTimeString() });
+  saveAll(); render();
+  inName.value = inMobile.value = inLenden.value = '';
+  alert('✅ গ্রাহক যুক্ত হয়েছে!'); switchPage('home');
+}
+
+function openEdit(id) {
+  const u = users.find(x => x.id === id); if(!u) return;
+  editId = id; editName.value = u.name; editMobile.value = u.mobile;
+  editAddLenden.value = 0; editAddPaid.value = 0;
+  editModal.classList.add('active');
+}
+function closeEditModal() { editModal.classList.remove('active'); }
+
+function saveEdit() {
+  const u = users.find(x => x.id === editId); if(!u) return;
+  const addL = Number(editAddLenden.value) || 0, addP = Number(editAddPaid.value) || 0;
+  u.name = editName.value.trim(); u.mobile = editMobile.value.trim();
+  const d = new Date().toISOString().slice(0,10), tm = new Date().toLocaleTimeString();
+  
+  if(addL > 0) { u.lenden += addL; transactions.push({ id: Date.now(), userId: u.id, type:'lenden', amount:addL, date:d, method:'bKash', time:tm }); }
+  if(addP > 0) { u.paid += addP; transactions.push({ id: Date.now()+1, userId: u.id, type:'paid', amount:addP, date:d, method:'bKash', time:tm }); }
+  saveAll(); render(); closeEditModal();
+  if(currentPage === 'userDetail') renderUserDetail();
+}
+
+function deleteUser(id) {
+  if(!confirm('মুছে ফেলতে চান?')) return;
+  users = users.filter(x => x.id !== id);
+  transactions = transactions.filter(x => x.userId !== id);
+  saveAll(); render(); switchPage('home');
+}
+
+function render() {
+  const q = (search.value || '').toLowerCase();
+  const filtered = users.filter(u => {
+    const due = u.lenden - u.paid;
+    const match = u.name.toLowerCase().includes(q) || u.mobile.includes(q);
+    if(!match) return false;
+    if(currentFilter === 'due') return due > 0;
+    if(currentFilter === 'clear') return due <= 0;
+    return true;
+  });
+
+  userCount.textContent = filtered.length;
+  userList.innerHTML = filtered.map(u => {
+    const due = u.lenden - u.paid;
+    const wa = `https://wa.me/88${u.mobile.replace(/[^0-9]/g,'')}?text=${encodeURIComponent(`বকেয়া: ৳${due}`)}`;
+    return `
+      <div class="user-card ${due <= 0 ? 'clear' : 'due'}">
+        <div class="user-card-header" onclick="openDetail(${u.id})">
+          <div><div class="name">${u.name}</div><div style="font-size:12px;color:#888;">📱 ${u.mobile}</div></div>
+          <span class="status ${due <= 0 ? 'clear' : 'due'}">${due <= 0 ? '✅ Clear' : '⚠️ বাকি'}</span>
+        </div>
+        <div class="user-card-stats" onclick="openDetail(${u.id})">
+          <div><div class="label">Lenden</div><div class="val lenden">৳${u.lenden}</div></div>
+          <div><div class="label">Paid</div><div class="val paid">৳${u.paid}</div></div>
+          <div><div class="label">বাকি</div><div class="val due">৳${Math.max(0, due)}</div></div>
+        </div>
+        <div class="user-card-actions">
+          ${due > 0 ? `<a class="btn-wa" href="${wa}" target="_blank">💬 তাগাদা</a>` : ''}
+          <button class="btn-edit" onclick="openEdit(${u.id})">✏️ Edit</button>
+          <button class="btn-del" onclick="deleteUser(${u.id})">🗑️ Delete</button>
+        </div>
+      </div>
+    `;
+  }).join('') || '<div class="empty-state">কোনো গ্রাহক পাওয়া যায়নি</div>';
+
+  const tLenden = users.reduce((s,u) => s + u.lenden, 0);
+  const tPaid = users.reduce((s,u) => s + u.paid, 0);
+  cardLenden.textContent = '৳' + tLenden; cardPaid.textContent = '৳' + tPaid;
+  cardDue.textContent = '৳' + Math.max(0, tLenden - tPaid); cardUsers.textContent = users.length;
+
+  let m = { bKash:{l:0,p:0}, Nagad:{l:0,p:0}, VIP:{l:0,p:0}, Cash:{l:0,p:0} };
+  transactions.forEach(t => {
+    if(m[t.method]) {
+      if(t.type==='lenden') m[t.method].l += t.amount;
+      if(t.type==='paid') m[t.method].p += t.amount;
+    }
+  });
+  mBkashLenden.textContent = '৳'+m.bKash.l; mBkashPaid.textContent = '৳'+m.bKash.p;
+  mNagadLenden.textContent = '৳'+m.Nagad.l; mNagadPaid.textContent = '৳'+m.Nagad.p;
+  mVipLenden.textContent = '৳'+m.VIP.l; mVipPaid.textContent = '৳'+m.VIP.p;
+  mCashLenden.textContent = '৳'+m.Cash.l; mCashPaid.textContent = '৳'+m.Cash.p;
+
+  drawChart();
+}
+
+function openDetail(id) { currentUserId = id; switchPage('userDetail'); }
+function renderUserDetail() {
+  const u = users.find(x => x.id === currentUserId); if(!u) return switchPage('home');
+  const due = u.lenden - u.paid;
+  const txs = transactions.filter(t => t.userId === u.id).reverse();
+  userDetailContent.innerHTML = `
+    <div class="user-detail-header">
+      <div class="avatar">${u.name.charAt(0).toUpperCase()}</div>
+      <h2>${u.name}</h2><p>📱 ${u.mobile}</p>
+      <div style="margin-top:10px;font-size:16px;font-weight:700;">মোট বাকি: ৳${Math.max(0, due)}</div>
+    </div>
+    <div class="section-title"><span>📱 লেনদেনের ইতিহাস</span></div>
+    ${txs.map(t => `
+      <div class="bkash-tx">
+        <div class="bkash-icon ${t.type}">${t.type === 'lenden' ? '↓' : '↑'}</div>
+        <div class="bkash-info">
+          <div style="font-weight:700;font-size:13px;">${t.type==='lenden'?'ধার গ্রহণ':'পরিশোধ/জমা'} (${t.method||'-'})</div>
+          <div style="font-size:11px;color:#888;">${t.date} · ${t.time||''}</div>
+        </div>
+        <div class="bkash-amount" style="color:${t.type==='lenden'?'#dc3545':'#28a745'}">
+          ${t.type==='lenden'?'-':'+'}৳${t.amount}
+        </div>
+      </div>
+    `).join('') || '<div class="empty-state">কোনো লেনদেন নেই</div>'}
+  `;
+}
+
+function renderTx() {
+  txListFull.innerHTML = transactions.slice().reverse().map(t => {
+    const u = users.find(x => x.id === t.userId) || { name: 'Unknown' };
+    return `
+      <div class="bkash-tx">
+        <div class="bkash-icon ${t.type}">${t.type === 'lenden' ? '↓' : '↑'}</div>
+        <div class="bkash-info">
+          <div style="font-weight:700;font-size:13px;">${u.name}</div>
+          <div style="font-size:11px;color:#888;">${t.date} (${t.method||'-'})</div>
+        </div>
+        <div class="bkash-amount" style="color:${t.type==='lenden'?'#dc3545':'#28a745'}">
+          ${t.type==='lenden'?'-':'+'}৳${t.amount}
+        </div>
+      </div>
+    `;
+  }).join('') || '<div class="empty-state">কোনো লেনদেন নেই</div>';
+}
+
+function openCalcModal() { calcModalOverlay.classList.add('active'); }
+function closeCalcModal() { calcModalOverlay.classList.remove('active'); }
+function applyPresetRate(r) { currentSelectedRate = r; calculateRate(); }
+function calculateRate() {
+  const th = parseFloat(calcThousandInput.value) || 0;
+  calcResultDisplay.textContent = (th * currentSelectedRate).toFixed(2);
+}
+
+function setChartRange(r) {
+  chartRange = r;
+  btnChart7d.classList.toggle('active', r === '7d');
+  btnChart6m.classList.toggle('active', r === '6m');
+  drawChart();
+}
+
+function drawChart() {
+  const canvas = analyticsCanvas; if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = canvas.clientWidth * dpr; canvas.height = canvas.clientHeight * dpr;
+  ctx.scale(dpr, dpr);
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  ctx.clearRect(0,0,w,h);
+
+  let data = [];
+  for(let i=6; i>=0; i--) {
+    let d = new Date(); d.setDate(d.getDate() - i);
+    let ds = d.toISOString().slice(0,10);
+    let l = transactions.filter(t => t.date === ds && t.type === 'lenden').reduce((s,x)=>s+x.amount, 0);
+    let p = transactions.filter(t => t.date === ds && t.type === 'paid').reduce((s,x)=>s+x.amount, 0);
+    data.push({ label: d.getDate()+'/'+(d.getMonth()+1), l, p });
+  }
+
+  const max = Math.max(...data.map(x => Math.max(x.l, x.p)), 100);
+  const colW = (w - 20) / data.length;
+  data.forEach((d, i) => {
+    const x = 10 + i * colW, barW = Math.max(4, colW/2 - 4);
+    const lh = (d.l / max) * (h - 30), ph = (d.p / max) * (h - 30);
+    ctx.fillStyle = '#e2136e'; ctx.fillRect(x, h - 20 - lh, barW, lh);
+    ctx.fillStyle = '#28a745'; ctx.fillRect(x + barW + 2, h - 20 - ph, barW, ph);
+    ctx.fillStyle = '#888'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(d.label, x + barW, h - 5);
+  });
+}
+
+inDate.value = new Date().toISOString().slice(0,10);
+initFirebase();
+render();
+</script>
+</body>
+</html>
