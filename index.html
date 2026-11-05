@@ -504,18 +504,16 @@ function toggleAdminLoginForm() {
   box.classList.toggle('active');
 }
 
-// Admin Gmail Verification
+/// Admin Gmail & Password Verification
 function loginAsAdmin() {
-  const email = document.getElementById('adminEmailInput').value.trim();
+  const email = document.getElementById('adminEmailInput').value.trim().toLowerCase();
   const pass = document.getElementById('adminPassInput').value.trim();
 
-  // আপনার ইচ্ছা অনুযায়ী যেকোনো জিমেইল দিয়ে ভেরিফাই করুন (পাসওয়ার্ড ডিফল্ট: 1234)
-  if (!email || !email.includes('@')) {
-    alert('❌ সঠিক জিমেইল দিন!');
-    return;
-  }
+  // 👉👉 এখানে আপনার নিজস্ব জিমেইল ও পাসওয়ার্ড লিখুন:
+  const MY_ADMIN_GMAIL = "mohirkhan068@gmail.com";  // উদাহরণ: আপনার আসল জিমেইল দিন
+  const MY_ADMIN_PASSWORD = "36964646";  // উদাহরণ: আপনার সিক্রেট পাসওয়ার্ড দিন
 
-  if (pass === '1234') {
+  if (email === MY_ADMIN_GMAIL.toLowerCase() && pass === MY_ADMIN_PASSWORD) {
     currentUserRole = 'admin';
     sessionStorage.setItem('bkash_role', 'admin');
     sessionStorage.setItem('bkash_admin_email', email);
@@ -523,7 +521,7 @@ function loginAsAdmin() {
     applyRoleUI();
     alert('🛡️ স্বাগতম এডমিন! আপনার সম্পূর্ণ কন্ট্রোল ওপেন হয়েছে।');
   } else {
-    alert('❌ ভুল পাসওয়ার্ড! সঠিক পাসওয়ার্ড দিন (Default: 1234)');
+    alert('❌ ভুল জিমেইল অথবা পাসওয়ার্ড! আপনি এডমিন হিসেবে প্রবেশ করতে পারছেন না।');
   }
 }
 
