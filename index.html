@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#e2136e">
-<title>bKash Lenden Manager</title>
+<title>bKash Lenden Manager Pro</title>
 
 <!-- FIREBASE COMPAT SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -15,7 +15,7 @@
   body { background:#f0f2f5; color:#333; padding-bottom:70px; overflow-x:hidden; }
   input, select, button { font-family:inherit; font-size:15px; }
 
-  /* 2-PAGE GATEWAY (ADMIN vs USER) */
+  /* DOUBLE PAGE ROLE GATEWAY */
   .role-gateway {
     position:fixed; inset:0; background:#f0f2f5; z-index:99999;
     display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;
@@ -38,7 +38,7 @@
   .gw-btn.admin { background:linear-gradient(135deg, #1e3c72, #2a5298); color:#fff; }
   .gw-btn.user { background:linear-gradient(135deg, #e2136e, #b8004f); color:#fff; }
 
-  /* FINGERPRINT FAST BUTTON */
+  /* BIOMETRICS BUTTON */
   .bio-btn {
     width:100%; padding:14px; background:linear-gradient(135deg,#28a745,#1e7e34);
     color:#fff; border:none; border-radius:14px; font-size:14px; font-weight:700;
@@ -47,7 +47,6 @@
   }
   .bio-btn:active { transform:scale(.98); }
 
-  /* ADMIN LOGIN MODAL */
   .admin-login-box {
     display:none; margin-top:16px; background:#f8f9fa; border-radius:14px; padding:16px; border:1px solid #ddd;
   }
@@ -72,6 +71,11 @@
   }
   .navbar .back-btn.show { display:flex; }
   .navbar-right { display:flex; align-items:center; gap:8px; }
+  .nav-calc-btn {
+    background:rgba(255,255,255,.25); border:none; color:#fff;
+    padding:5px 10px; border-radius:14px; font-size:12px; font-weight:700;
+    cursor:pointer; display:inline-flex; align-items:center; gap:4px;
+  }
   .cloud-sync-badge {
     font-size:11px; font-weight:700; background:rgba(255,255,255,.2);
     padding:4px 9px; border-radius:14px; display:inline-flex; align-items:center; gap:4px;
@@ -81,21 +85,25 @@
     padding:3px 8px; border-radius:10px; cursor:pointer;
   }
 
-  .container { padding:14px; max-width:800px; margin:auto; }
+  .container { padding:14px; max-width:1200px; margin:auto; }
   .page { display:none; }
   .page.active { display:block; }
 
-  /* BALANCE CARD */
+  /* BALANCE OVERVIEW */
   .balance-card {
-    background: linear-gradient(135deg,#e2136e,#b8004f); color:#fff; border-radius:16px; padding:18px;
+    background: linear-gradient(135deg,#e2136e,#b8004f);
+    color:#fff; border-radius:16px; padding:18px;
     margin-bottom:12px; box-shadow:0 6px 20px rgba(226,19,110,.3);
   }
-  .balance-card h3 { font-size:12px; opacity:.9; }
+  .balance-card h3 { font-size:12px; opacity:.9; font-weight:500; }
   .balance-card .big { font-size:28px; font-weight:700; margin:4px 0; }
-  .balance-card .sub { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px; font-size:11px; }
+  .balance-card .sub {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:10px;
+    margin-top:12px; font-size:11px; opacity:.95;
+  }
   .balance-card .sub div span { display:block; font-size:14px; font-weight:700; margin-top:2px; }
 
-  /* METHOD CARDS */
+  /* METHOD BREAKDOWN CARDS */
   .method-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; margin-bottom:14px; }
   .method-summary-card {
     background:#fff; border-radius:12px; padding:10px 12px;
@@ -105,19 +113,27 @@
   .method-summary-card.nagad { border-left-color:#f6921e; }
   .method-summary-card.vip { border-left-color:#6f42c1; }
   .method-summary-card.cash { border-left-color:#28a745; }
-  .method-summary-card .m-head { display:flex; justify-content:space-between; font-size:12px; font-weight:700; margin-bottom:4px; }
+  .method-summary-card .m-head { display:flex; justify-content:space-between; align-items:center; font-size:12px; font-weight:700; margin-bottom:4px; }
   .method-summary-card .m-row { display:flex; justify-content:space-between; font-size:11px; color:#666; margin-top:2px; }
+  .method-summary-card .m-row strong { color:#222; font-weight:700; }
 
+  .quick-tool-bar { margin-bottom:14px; }
   .quick-calc-trigger {
-    background: linear-gradient(135deg, #1e3c72, #2a5298); color:#fff; border:none; width:100%; padding:12px 14px;
-    border-radius:12px; font-size:13px; font-weight:700; cursor:pointer; display:flex; justify-content:space-between;
-    margin-bottom:14px; box-shadow:0 3px 10px rgba(30,60,114,.25);
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color:#fff; border:none; width:100%; padding:12px 14px;
+    border-radius:12px; font-size:13px; font-weight:700;
+    cursor:pointer; display:flex; align-items:center; justify-content:space-between;
+    box-shadow:0 3px 10px rgba(30,60,114,.25);
   }
 
+  /* ANALYTICS */
   .analytics-card { background:#fff; border-radius:14px; padding:14px; margin-bottom:14px; box-shadow:0 2px 8px rgba(0,0,0,.08); }
   .analytics-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-  .chart-container { position:relative; width:100%; height:130px; }
+  .chart-container { position:relative; width:100%; height:140px; }
   #analyticsCanvas { width:100%; height:100%; display:block; }
+  .chart-legend { display:flex; justify-content:center; gap:16px; margin-top:8px; font-size:11px; color:#666; font-weight:600; }
+  .chart-legend span { display:flex; align-items:center; gap:5px; }
+  .chart-legend i { width:10px; height:10px; border-radius:3px; display:inline-block; }
 
   .filter-pills { display:flex; gap:8px; margin-bottom:12px; overflow-x:auto; }
   .pill { padding:7px 13px; border:1px solid #ddd; background:#fff; border-radius:20px; font-size:11.5px; font-weight:700; color:#666; cursor:pointer; white-space:nowrap; }
@@ -126,73 +142,111 @@
   .search-bar { display:flex; gap:8px; margin-bottom:12px; }
   .search-bar input { flex:1; padding:12px 14px; border:1px solid #ddd; border-radius:10px; font-size:15px; background:#fff; outline:none; }
 
-  .section-title { font-size:14px; color:#e2136e; font-weight:700; margin:14px 0 8px; display:flex; justify-content:space-between; }
-  
-  /* USER CARD */
-  .user-card { background:#fff; border-radius:14px; padding:14px; margin-bottom:10px; box-shadow:0 2px 8px rgba(0,0,0,.08); border-left:4px solid #e2136e; cursor:pointer; }
+  .section-title { font-size:14px; color:#e2136e; font-weight:700; margin:14px 0 8px; display:flex; justify-content:space-between; align-items:center; }
+  .section-title .count { font-size:12px; color:#888; font-weight:500; }
+
+  /* USER CARDS */
+  .user-card {
+    background:#fff; border-radius:14px; padding:14px; margin-bottom:10px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08); cursor:pointer; border-left:4px solid #e2136e;
+  }
   .user-card.clear { border-left-color:#28a745; }
   .user-card.due { border-left-color:#dc3545; }
-  .user-card-header { display:flex; justify-content:space-between; margin-bottom:10px; }
-  .user-card-header .name { font-weight:700; font-size:15px; }
+  .user-card-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
+  .user-card-header .name { font-weight:700; font-size:15px; color:#222; }
+  .user-card-header .mobile { font-size:12px; color:#888; margin-top:2px; }
   .user-card-header .status { padding:3px 10px; border-radius:12px; font-size:11px; font-weight:700; }
   .status.clear { background:#d4edda; color:#155724; }
   .status.due { background:#f8d7da; color:#721c24; }
 
   .user-card-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; background:#f8f9fa; border-radius:10px; padding:10px; text-align:center; }
-  .user-card-stats .label { font-size:10px; color:#888; }
-  .user-card-stats .val { font-size:14px; font-weight:700; margin-top:2px; }
-  .val.lenden { color:#e2136e; } .val.paid { color:#28a745; } .val.due { color:#dc3545; }
+  .user-card-stats .label { font-size:10px; color:#888; margin-bottom:2px; }
+  .user-card-stats .val { font-size:14px; font-weight:700; }
+  .user-card-stats .val.lenden { color:#e2136e; }
+  .user-card-stats .val.paid { color:#28a745; }
+  .user-card-stats .val.due { color:#dc3545; }
 
   .user-card-actions { display:flex; gap:8px; margin-top:10px; }
-  .user-card-actions button, .user-card-actions a { flex:1; padding:9px; border:none; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer; text-align:center; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; }
+  .user-card-actions button, .user-card-actions a {
+    flex:1; padding:9px; border:none; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;
+    text-align:center; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:4px;
+  }
   .btn-edit { background:#ff9800; color:#fff; }
   .btn-del { background:#dc3545; color:#fff; }
   .btn-wa { background:#25D366; color:#fff; }
 
-  /* FORMS */
-  .form-box { background:#fff; padding:18px; border-radius:14px; box-shadow:0 2px 8px rgba(0,0,0,.08); margin-bottom:14px; }
-  .form-box h2 { font-size:16px; margin-bottom:14px; color:#e2136e; font-weight:700; }
-  .form-grid { display:grid; grid-template-columns:1fr; gap:12px; }
-  .form-grid input, .form-grid select { padding:12px 14px; border:1px solid #ddd; border-radius:10px; font-size:15px; width:100%; }
-  .form-grid button { padding:14px; background:#e2136e; color:#fff; border:none; border-radius:10px; font-weight:700; font-size:16px; cursor:pointer; }
-
-  /* TRANSACTIONS */
+  .tx-date-header {
+    background:#f8f9fa; padding:10px 14px; margin-top:12px; font-size:12px; font-weight:700; color:#666;
+    border-radius:8px 8px 0 0; display:flex; justify-content:space-between;
+  }
   .bkash-tx { display:flex; align-items:center; gap:12px; padding:13px 14px; background:#fff; border-bottom:1px solid #f5f5f5; cursor:pointer; }
-  .bkash-icon { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; color:#fff; flex-shrink:0; }
-  .bkash-icon.lenden { background:#e2136e; } .bkash-icon.paid { background:#28a745; }
-  .bkash-info { flex:1; }
-  .bkash-amount { font-weight:700; font-size:15px; text-align:right; }
+  .bkash-icon { width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:700; color:#fff; flex-shrink:0; }
+  .bkash-icon.lenden { background: linear-gradient(135deg,#e2136e,#b8004f); }
+  .bkash-icon.paid { background: linear-gradient(135deg,#28a745,#1e7e34); }
+  .bkash-info { flex:1; min-width:0; }
+  .bkash-info .bk-name { font-weight:700; font-size:14px; color:#222; }
+  .bkash-info .bk-meta { font-size:12px; color:#888; margin-top:2px; }
+  .bkash-amount { text-align:right; font-weight:700; font-size:15px; }
+  .bkash-amount.out { color:#dc3545; }
+  .bkash-amount.in { color:#28a745; }
 
-  .user-detail-header { background:linear-gradient(135deg,#e2136e,#b8004f); color:#fff; border-radius:16px; padding:20px; text-align:center; margin-bottom:16px; }
-  .user-detail-header .avatar { width:60px; height:60px; border-radius:50%; background:rgba(255,255,255,.25); margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:700; }
+  .method-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; }
+  .method-bkash { background:#e2136e; color:#fff; }
+  .method-nagad { background:#f6921e; color:#fff; }
+  .method-vip { background:#6f42c1; color:#fff; }
+  .method-cash { background:#28a745; color:#fff; }
 
-  /* BOTTOM NAV */
+  .user-detail-header {
+    background: linear-gradient(135deg,#e2136e,#b8004f);
+    color:#fff; border-radius:16px; padding:20px; margin-bottom:16px; text-align:center;
+  }
+  .user-detail-header .avatar { width:65px; height:65px; border-radius:50%; background:rgba(255,255,255,.25); margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:700; }
+  .user-detail-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:16px; background:rgba(255,255,255,.15); padding:12px; border-radius:12px; }
+
   .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid #eee; display:flex; justify-content:space-around; padding:6px 0; z-index:100; }
-  .bottom-nav button { background:none; border:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:2px; color:#888; font-size:10px; font-weight:600; flex:1; }
+  .bottom-nav button { background:none; border:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:2px; color:#888; font-size:9.5px; font-weight:600; flex:1; }
   .bottom-nav button.active { color:#e2136e; font-weight:700; }
   .bottom-nav button .ico { font-size:18px; }
 
-  /* MODALS */
   .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:1000; align-items:center; justify-content:center; padding:14px; }
   .modal-overlay.active { display:flex; }
-  .modal-box { background:#fff; border-radius:18px; max-width:440px; width:100%; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,.3); }
+  .receipt, .edit-modal, .calc-modal { background:#fff; border-radius:18px; max-width:440px; width:100%; max-height:92vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.3); }
 
-  .calc-input { width:100%; padding:12px; border:2px solid #1e3c72; border-radius:12px; font-size:16px; font-weight:600; margin-bottom:12px; }
-  .calc-result-box { border:2px dashed #1e3c72; border-radius:14px; padding:14px; text-align:center; margin-bottom:12px; }
-  .calc-result-box .c-val { font-size:28px; font-weight:800; color:#1e3c72; }
-  .calc-buttons-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px; }
-  .calc-btn-pill { background:#1c355e; color:#fff; border:none; padding:10px; border-radius:20px; font-size:12px; font-weight:700; cursor:pointer; }
+  /* PRO CALCULATOR */
+  .calc-modal { border-radius:24px; padding:20px; }
+  .calc-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+  .calc-input { width:100%; padding:12px 14px; border:2px solid #1e3c72; border-radius:12px; font-size:16px; font-weight:600; outline:none; margin-bottom:14px; }
+  .calc-result-box { border:2px dashed #1e3c72; border-radius:14px; padding:16px; text-align:center; margin-bottom:16px; }
+  .calc-result-box .c-val { font-size:32px; font-weight:800; color:#1e3c72; }
+  .calc-buttons-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+  .calc-btn-pill { background:#1c355e; color:#fff; border:none; padding:12px; border-radius:24px; font-size:13px; font-weight:700; cursor:pointer; }
 
-  .empty-state { padding:35px 20px; text-align:center; color:#999; font-size:14px; background:#fff; border-radius:12px; }
+  /* PRO RECEIPT */
+  .receipt-header { background:linear-gradient(135deg,#e2136e,#b8004f); color:#fff; padding:22px 18px; text-align:center; border-radius:18px 18px 0 0; }
+  .receipt-header .logo { font-size:20px; font-weight:700; }
+  .receipt-body { padding:18px; }
+  .receipt-row { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px dashed #eee; font-size:13px; }
+  .receipt-footer { padding:0 18px 18px; text-align:center; }
+  .receipt-footer .trxid { background:#f0f2f5; padding:10px; border-radius:8px; font-family:monospace; margin-bottom:12px; font-size:12px; }
+
+  .settings-group { margin-bottom:18px; }
+  .settings-group h3 { font-size:13px; font-weight:700; color:#555; margin-bottom:8px; }
+  .settings-card { background:#fff; border-radius:14px; box-shadow:0 2px 8px rgba(0,0,0,.06); overflow:hidden; }
+  .settings-btn { display:flex; align-items:center; gap:12px; padding:14px 16px; background:#fff; border:none; width:100%; text-align:left; cursor:pointer; border-bottom:1px solid #f2f2f2; }
+  .settings-btn .s-text { flex:1; }
+  .settings-btn .s-title { font-size:14px; font-weight:700; color:#222; }
+  .settings-btn .s-sub { font-size:11px; color:#888; margin-top:2px; }
+
+  .empty-state { padding:40px 20px; text-align:center; color:#999; font-size:14px; background:#fff; border-radius:12px; }
 </style>
 </head>
 <body>
 
-<!-- DOUBLE PAGE GATEWAY SCREEN -->
+<!-- GATEWAY SCREEN (USER vs ADMIN) -->
 <div class="role-gateway" id="roleGateway">
   <div class="gateway-card">
     <div class="logo">৳</div>
-    <h2>bKash Manager</h2>
+    <h2>bKash Manager Pro</h2>
     <p>আপনি কোন হিসেবে প্রবেশ করতে চান?</p>
     <div class="gateway-btns">
       <button class="gw-btn user" onclick="enterAsUser()">
@@ -205,12 +259,12 @@
       </button>
     </div>
 
-    <!-- FINGERPRINT BUTTON (AUTO APPEARS IF ENABLED) -->
+    <!-- BIOMETRIC FINGERPRINT FAST BUTTON -->
     <button class="bio-btn" id="btnBiometricFast" onclick="authenticateBiometrics()">
       <span>👆 Fingerprint / Face ID দিয়ে আনলক</span>
     </button>
 
-    <!-- ADMIN GMAIL / PASS LOGIN -->
+    <!-- ADMIN LOGIN FORM -->
     <div class="admin-login-box" id="adminLoginBox">
       <div style="font-size:12px;font-weight:700;margin-bottom:8px;color:#1e3c72;">এডমিন জিমেইল ও পাসওয়ার্ড দিন</div>
       <input type="email" id="adminEmailInput" placeholder="Admin Gmail">
@@ -226,6 +280,7 @@
     <h1 id="navTitle">💰 bKash Manager</h1>
   </div>
   <div class="navbar-right">
+    <button class="nav-calc-btn" onclick="openCalcModal()">🧮 রেট হিসাব</button>
     <span class="role-indicator" id="roleIndicator" onclick="switchAccount()">User</span>
     <div class="cloud-sync-badge" id="cloudStatusBadge">☁️ অফলাইন</div>
   </div>
@@ -244,12 +299,14 @@
       </div>
     </div>
 
-    <button class="quick-calc-trigger" onclick="openCalcModal()">
-      <span>🧮 প্রতি হাজারে রেট ক্যালকুলেটর</span>
-      <span>হিসাব করুন ➔</span>
-    </button>
+    <div class="quick-tool-bar">
+      <button class="quick-calc-trigger" onclick="openCalcModal()">
+        <span>🧮 প্রতি হাজারে রেট ক্যালকুলেটর (Quick Calc)</span>
+        <span>হিসাব করুন ➔</span>
+      </button>
+    </div>
 
-    <div class="section-title"><span>💳 মেথড অনুযায়ী হিসাব</span></div>
+    <div class="section-title"><span>💳 মেথড অনুযায়ী আলাদা হিসাব</span></div>
     <div class="method-grid">
       <div class="method-summary-card bkash"><div class="m-head" style="color:#e2136e;"><span>📱 bKash</span></div><div class="m-row"><span>লেনদেন:</span><strong id="mBkashLenden">৳0</strong></div><div class="m-row"><span>জমা:</span><strong id="mBkashPaid" style="color:#28a745;">৳0</strong></div></div>
       <div class="method-summary-card nagad"><div class="m-head" style="color:#f6921e;"><span>🟠 Nagad</span></div><div class="m-row"><span>লেনদেন:</span><strong id="mNagadLenden">৳0</strong></div><div class="m-row"><span>জমা:</span><strong id="mNagadPaid" style="color:#28a745;">৳0</strong></div></div>
@@ -258,7 +315,13 @@
     </div>
 
     <div class="analytics-card">
-      <div class="analytics-header"><span style="font-size:13px;font-weight:700;">📊 ক্যাশফ্লো রিপোর্ট (৭ দিন)</span></div>
+      <div class="analytics-header">
+        <span style="font-size:13px;font-weight:700;">📊 ক্যাশফ্লো রিপোর্ট (Analytics)</span>
+        <div style="display:flex;gap:4px;">
+          <button onclick="setChartRange('7d')" style="padding:4px 8px;border-radius:6px;border:none;font-weight:700;font-size:11px;">৭ দিন</button>
+          <button onclick="setChartRange('6m')" style="padding:4px 8px;border-radius:6px;border:none;font-weight:700;font-size:11px;">৬ মাস</button>
+        </div>
+      </div>
       <div class="chart-container"><canvas id="analyticsCanvas"></canvas></div>
     </div>
 
@@ -270,18 +333,18 @@
       <button class="pill" id="pillClear" onclick="setFilter('clear')">✅ পরিশোধিত (0)</button>
     </div>
 
-    <div class="section-title"><span>👥 গ্রাহকদের তালিকা</span><span class="count" id="userCount">0</span></div>
+    <div class="section-title"><span>👥 All Users</span><span class="count" id="userCount">0 user</span></div>
     <div id="userList"></div>
   </div>
 
-  <!-- PAGE 2: ADD USER (ONLY ADMIN) -->
+  <!-- PAGE 2: ADD USER (ADMIN ONLY) -->
   <div class="page" id="pageAddUser">
-    <div class="form-box">
-      <h2>➕ নতুন User যোগ করুন (Admin Only)</h2>
-      <div class="form-grid">
-        <input type="text" id="inName" placeholder="User Name (নাম)">
-        <input type="text" id="inMobile" placeholder="Mobile Number (মোবাইল)" inputmode="numeric">
-        <input type="number" id="inLenden" placeholder="Lenden Amount ৳ (ধার)" inputmode="numeric">
+    <div class="form-box" style="background:#fff;padding:18px;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.08);">
+      <h2 style="font-size:16px;color:#e2136e;font-weight:700;margin-bottom:14px;">➕ নতুন User যোগ করুন (Admin)</h2>
+      <div style="display:grid;gap:12px;">
+        <input type="text" id="inName" placeholder="User Name (গ্রাহকের নাম)">
+        <input type="text" id="inMobile" placeholder="Mobile Number (মোবাইল নম্বর)" inputmode="numeric">
+        <input type="number" id="inLenden" placeholder="Lenden Amount ৳ (ধার/লেনদেন)" inputmode="numeric">
         <input type="date" id="inDate">
         <select id="inMethod">
           <option value="bKash">📱 bKash</option>
@@ -289,7 +352,7 @@
           <option value="VIP">💜 VIP</option>
           <option value="Cash">💵 Cash</option>
         </select>
-        <button onclick="addUser()">Save User</button>
+        <button onclick="addUser()" style="padding:14px;background:#e2136e;color:#fff;border:none;border-radius:10px;font-weight:700;font-size:16px;cursor:pointer;">Save User</button>
       </div>
     </div>
   </div>
@@ -299,7 +362,8 @@
 
   <!-- PAGE 4: TRANSACTIONS -->
   <div class="page" id="pageTx">
-    <div class="section-title"><span>📱 All Transactions</span></div>
+    <div class="section-title"><span>📱 All Transactions</span><span class="count" id="txCount">0 tx</span></div>
+    <div class="search-bar"><input type="text" id="txSearch" placeholder="🔍 Search user or mobile..." oninput="renderTxPage()"></div>
     <div id="txListFull"></div>
   </div>
 
@@ -313,26 +377,48 @@
   <div class="page" id="pageSettings">
     <div class="section-title"><span>⚙️ Settings</span></div>
     
-    <!-- BIOMETRIC SETTING IN APP -->
-    <div class="form-box admin-only-feature">
-      <div style="font-weight:700;margin-bottom:4px;">👆 Biometric Security</div>
-      <div style="font-size:12px;color:#666;margin-bottom:12px;">ফোনের আসল Fingerprint বা Face ID সেট করুন।</div>
-      <button onclick="setupBiometrics()" style="background:#28a745;color:#fff;border:none;padding:12px;border-radius:10px;width:100%;font-weight:700;cursor:pointer;">Enable Fingerprint / Face ID</button>
+    <div class="settings-group admin-only-feature">
+      <h3>👆 Biometric Fingerprint / Face ID</h3>
+      <div class="settings-card">
+        <div class="settings-btn" onclick="setupBiometrics()">
+          <div style="font-size:22px;">👆</div>
+          <div class="s-text"><div class="s-title">Enable Fingerprint / Face ID</div><div class="s-sub">পাসওয়ার্ড ছাড়া এক ক্লিকে আঙুল ছুঁয়ে আনলক করুন</div></div>
+          <div>➔</div>
+        </div>
+      </div>
     </div>
 
-    <div class="form-box">
-      <div style="font-weight:700;margin-bottom:4px;">🔥 Firebase Live Cloud Status</div>
-      <div style="font-size:12px;color:#666;margin-bottom:12px;">আপনার লাইভ ক্লাউড ডাটাবেজ সক্রিয় আছে।</div>
-      <button onclick="forceSync()" style="background:#1e3c72;color:#fff;border:none;padding:12px;border-radius:10px;width:100%;font-weight:700;">⚡ Force Push to Cloud</button>
+    <div class="settings-group">
+      <h3>🔥 Firebase Realtime Live Cloud</h3>
+      <div class="settings-card">
+        <div class="settings-btn" onclick="forcePushToFirebase()">
+          <div style="font-size:22px;">⚡</div>
+          <div class="s-text"><div class="s-title" id="fbStatusText">Firebase Connected</div><div class="s-sub">সব মোবাইল থেকে লাইভ ডাটা সিঙ্ক হচ্ছে</div></div>
+          <div>➔</div>
+        </div>
+      </div>
     </div>
-    
-    <div class="form-box admin-only-feature">
-      <div style="font-weight:700;margin-bottom:8px;color:#dc3545;">🗑️ Admin Danger Zone</div>
-      <button onclick="deleteAllData()" style="width:100%;padding:10px;background:#fff0f2;color:#dc3545;border:1px solid #ffd2d6;border-radius:8px;font-weight:700;cursor:pointer;">Delete All Data</button>
+
+    <div class="settings-group">
+      <h3>📤 Pro Exports & Statements</h3>
+      <div class="settings-card">
+        <div class="settings-btn" onclick="exportJSON()"><div style="font-size:22px;">💾</div><div class="s-text"><div class="s-title">JSON Offline Backup</div></div><div>➔</div></div>
+        <div class="settings-btn" onclick="exportCSV()"><div style="font-size:22px;">📊</div><div class="s-text"><div class="s-title">CSV Excel Export</div></div><div>➔</div></div>
+        <div class="settings-btn" onclick="printPDFStatement()"><div style="font-size:22px;">📄</div><div class="s-text"><div class="s-title">PDF Statement Print</div></div><div>➔</div></div>
+      </div>
     </div>
-    
-    <div class="form-box">
-      <button onclick="switchAccount()" style="width:100%;padding:10px;background:#eee;border:none;border-radius:8px;font-weight:700;cursor:pointer;">🚪 Switch Account / Logout</button>
+
+    <div class="settings-group admin-only-feature">
+      <h3 style="color:#dc3545;">🗑️ Danger Zone</h3>
+      <div class="settings-card" style="border:1px solid #ffd2d6;">
+        <div class="settings-btn" onclick="deleteAllData()"><div style="font-size:22px;">⚠️</div><div class="s-text"><div class="s-title" style="color:#dc3545;">Delete All Data</div></div><div>➔</div></div>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <div class="settings-card">
+        <div class="settings-btn" onclick="switchAccount()"><div style="font-size:22px;">🚪</div><div class="s-text"><div class="s-title">Switch Account / Logout</div></div><div>➔</div></div>
+      </div>
     </div>
   </div>
 </div>
@@ -340,51 +426,74 @@
 <!-- BOTTOM NAVIGATION -->
 <div class="bottom-nav">
   <button class="active" id="navHome" onclick="switchPage('home')"><span class="ico">🏠</span><span>Home</span></button>
-  <button id="navAdd" class="admin-only-feature" onclick="switchPage('add')"><span class="ico">➕</span><span>Add</span></button>
+  <button id="navAdd" class="admin-only-feature" onclick="switchPage('add')"><span class="ico">➕</span><span>Add User</span></button>
   <button id="navTx" onclick="switchPage('tx')"><span class="ico">📱</span><span>Trans</span></button>
   <button id="navLog" onclick="switchPage('log')"><span class="ico">🔒</span><span>Log</span></button>
   <button id="navSettings" onclick="switchPage('settings')"><span class="ico">⚙️</span><span>Settings</span></button>
 </div>
 
-<!-- MODAL: CALC -->
+<!-- CALCULATOR MODAL -->
 <div class="modal-overlay" id="calcModalOverlay" onclick="if(event.target.id==='calcModalOverlay') closeCalcModal()">
-  <div class="modal-box">
-    <h3 style="margin-bottom:12px;">🧮 প্রতি হাজারে হিসাব</h3>
+  <div class="calc-modal">
+    <div class="calc-header"><h3>🧮 প্রতি হাজারে হিসাব</h3><button onclick="closeCalcModal()" style="border:none;background:none;font-size:18px;cursor:pointer;">✕</button></div>
     <input type="number" id="calcThousandInput" class="calc-input" placeholder="যেমন: 5" inputmode="decimal" oninput="calculateRate()">
-    <div class="calc-result-box"><div class="c-val" id="calcResultDisplay">০.০০</div></div>
+    <div class="calc-result-box"><div class="c-val" id="calcResultDisplay">০.০০</div><div style="font-size:12px;color:#777;margin-top:2px;">ফলাফল</div></div>
     <div class="calc-buttons-grid">
-      <button class="calc-btn-pill" onclick="applyPresetRate(2.55)">২.৫৫</button>
-      <button class="calc-btn-pill" onclick="applyPresetRate(2.60)">২.৬০</button>
+      <button class="calc-btn-pill" onclick="applyPresetRate(2.55)">২.৫৫ (খরচ ছাড়া)</button>
+      <button class="calc-btn-pill" onclick="applyPresetRate(2.60)">২.৬০ (খরচ সহ)</button>
     </div>
-    <button onclick="closeCalcModal()" style="width:100%;padding:10px;background:#eee;border:none;border-radius:10px;cursor:pointer;font-weight:700;">Close</button>
+    <div style="display:flex;gap:8px;"><input type="number" id="calcCustomRate" placeholder="অন্য রেট" step="0.01" style="flex:1;padding:10px;border:1px solid #ddd;border-radius:10px;"><button onclick="applyCustomRate()" style="background:#28a745;color:#fff;border:none;padding:10px 14px;border-radius:10px;font-weight:700;">হিসাব</button></div>
   </div>
 </div>
 
-<!-- MODAL: EDIT (ADMIN ONLY) -->
+<!-- RECEIPT MODAL -->
+<div class="modal-overlay" id="receiptModal" onclick="if(event.target.id==='receiptModal') closeReceipt()">
+  <div class="receipt">
+    <div class="receipt-header">
+      <div class="logo">bKash</div>
+      <div id="rcpStatus" style="font-size:11px;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:10px;margin-top:6px;display:inline-block;">Successful</div>
+      <div id="rcpAmount" style="font-size:28px;font-weight:700;margin-top:8px;">৳0</div>
+      <div id="rcpType" style="font-size:12px;opacity:.9;margin-top:4px;">Lenden</div>
+    </div>
+    <div class="receipt-body">
+      <div class="receipt-row"><span>User</span><strong id="rcpName">-</strong></div>
+      <div class="receipt-row"><span>Mobile</span><strong id="rcpMobile">-</strong></div>
+      <div class="receipt-row"><span>Date</span><strong id="rcpDate">-</strong></div>
+      <div class="receipt-row"><span>Method</span><strong id="rcpMethod">-</strong></div>
+      <div class="receipt-row"><span>Note</span><strong id="rcpNote">-</strong></div>
+    </div>
+    <div class="receipt-footer">
+      <div class="trxid" id="rcpTrx">TrxID: -</div>
+      <button onclick="closeReceipt()" style="background:#e2136e;color:#fff;border:none;padding:12px;border-radius:20px;width:100%;font-weight:700;cursor:pointer;">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL (ADMIN ONLY) -->
 <div class="modal-overlay" id="editModal" onclick="if(event.target.id==='editModal') closeEditModal()">
-  <div class="modal-box">
+  <div class="edit-modal" style="padding:18px;">
     <h3 style="color:#e2136e;margin-bottom:12px;">✏️ লেনদেন আপডেট করুন (Admin)</h3>
     <div id="editSummary" style="background:#fff2f6;padding:10px;border-radius:8px;font-size:12px;margin-bottom:12px;"></div>
     <div style="display:grid;gap:10px;">
       <input type="text" id="editName" placeholder="নাম">
       <input type="text" id="editMobile" placeholder="মোবাইল">
-      <div>
+      <div style="border-top:1px dashed #ddd;padding-top:8px;">
         <label style="font-size:11px;color:#e2136e;font-weight:700;">💸 নতুন ধার (+Lenden):</label>
         <input type="number" id="editAddLenden" value="0" style="width:100%;padding:10px;margin-top:4px;border:1px solid #ddd;border-radius:8px;">
         <select id="editLendenMethod" style="width:100%;padding:10px;margin-top:4px;border:1px solid #ddd;border-radius:8px;">
-          <option value="bKash">bKash</option><option value="Nagad">Nagad</option><option value="VIP">VIP</option><option value="Cash">Cash</option>
+          <option value="bKash">📱 bKash</option><option value="Nagad">🟠 Nagad</option><option value="VIP">💜 VIP</option><option value="Cash">💵 Cash</option>
         </select>
       </div>
-      <div>
+      <div style="border-top:1px dashed #ddd;padding-top:8px;">
         <label style="font-size:11px;color:#28a745;font-weight:700;">✅ জমা নিন (+Payment):</label>
         <input type="number" id="editAddPaid" value="0" style="width:100%;padding:10px;margin-top:4px;border:1px solid #ddd;border-radius:8px;">
         <select id="editPaidMethod" style="width:100%;padding:10px;margin-top:4px;border:1px solid #ddd;border-radius:8px;">
-          <option value="bKash">bKash</option><option value="Nagad">Nagad</option><option value="VIP">VIP</option><option value="Cash">Cash</option>
+          <option value="bKash">📱 bKash</option><option value="Nagad">🟠 Nagad</option><option value="VIP">💜 VIP</option><option value="Cash">💵 Cash</option>
         </select>
       </div>
       <div style="display:flex;gap:8px;margin-top:8px;">
-        <button onclick="closeEditModal()" style="flex:1;padding:11px;border:none;background:#ddd;border-radius:8px;">Cancel</button>
-        <button onclick="saveEdit()" style="flex:1;padding:11px;border:none;background:#e2136e;color:#fff;border-radius:8px;font-weight:700;">Save</button>
+        <button onclick="closeEditModal()" style="flex:1;padding:11px;border:none;background:#ddd;border-radius:8px;cursor:pointer;">Cancel</button>
+        <button onclick="saveEdit()" style="flex:1;padding:11px;border:none;background:#e2136e;color:#fff;border-radius:8px;font-weight:700;cursor:pointer;">Save</button>
       </div>
     </div>
   </div>
@@ -407,10 +516,11 @@ let users = [];
 let transactions = [];
 let activityLog = [];
 
-// Role: 'user' (Read-Only) or 'admin' (Full Access)
+// Current Role: 'user' (Read-Only) or 'admin' (Full Control)
 let currentUserRole = sessionStorage.getItem('bkash_role') || null;
 
 let currentFilter = 'all';
+let chartRange = '7d';
 let editId = null;
 let currentPage = 'home';
 let currentUserId = null;
@@ -423,6 +533,7 @@ function setCloudStatus(t, bg) {
   if (el) { el.textContent = t; el.style.background = bg; }
 }
 
+// Live 2-Way Realtime Listener from Firebase
 function initFirebase() {
   try {
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
@@ -433,7 +544,6 @@ function initFirebase() {
       else setCloudStatus('🔴 Offline', '#dc3545');
     });
 
-    // 2-Way Realtime Listener from Firebase
     fbDb.ref('bkash_master_cloud_v3').on('value', snap => {
       const val = snap.val();
       if (val) {
@@ -462,6 +572,7 @@ function initFirebase() {
   }
 }
 
+// Master Save Function (Only Admin Can Save to Firebase)
 function saveAll() {
   if (currentUserRole !== 'admin') {
     alert('⚠️ সাধারণ ইউজাররা কোনো তথ্য পরিবর্তন বা সেভ করতে পারবে না!');
@@ -488,7 +599,7 @@ function saveAll() {
   }
 }
 
-function forceSync() {
+function forcePushToFirebase() {
   if (currentUserRole !== 'admin') return alert('⚠️ শুধুমাত্র অ্যাডমিন ক্লাউড সিঙ্ক করতে পারবে!');
   saveAll();
   alert('ডাটা ফায়ারবেজ ক্লাউডে পাঠানো হয়েছে!');
@@ -532,7 +643,7 @@ async function setupBiometrics() {
     if (credential) {
       localStorage.setItem('bkash_bio_enabled', 'true');
       localStorage.setItem('bkash_bio_id', btoa(String.fromCharCode(...new Uint8Array(credential.rawId))));
-      alert('✅ অভিনন্দন! আপনার Fingerprint / Face ID সফলভাবে সেট করা হয়েছে।');
+      alert('✅ অভিনন্দন! আপনার Fingerprint / Face ID সফলভাবে সেট করা হয়েছে। এখন থেকে আঙুল ছুঁয়েই এক ক্লিকে ঢুকতে পারবেন!');
       checkRoleGateway();
     }
   } catch (err) {
@@ -625,7 +736,8 @@ function loginAsAdmin() {
     return;
   }
 
-  if (pass === '1234') { // Default password
+  // ডিফল্ট অ্যাডমিন পাসওয়ার্ড: 1234
+  if (pass === '1234') {
     currentUserRole = 'admin';
     sessionStorage.setItem('bkash_role', 'admin');
     sessionStorage.setItem('bkash_admin_email', email);
@@ -698,6 +810,12 @@ function setFilter(f) {
   render();
 }
 
+function getWhatsAppUrl(mobile, name, due) {
+  let num = mobile.replace(/[^0-9]/g, '');
+  if (num.startsWith('0')) num = '88' + num;
+  return `https://wa.me/${num}?text=${encodeURIComponent(`প্রিয় ${name},\nbKash হিসাব থেকে জানানো যাচ্ছে আপনার মোট বকেয়া ৳${due} টাকা। অনুগ্রহ করে দ্রুত পরিশোধ করুন।`)}`;
+}
+
 // ==========================================
 // 5. USER & TRANSACTION ACTIONS
 // ==========================================
@@ -710,8 +828,8 @@ function addUser() {
 
   const id = Date.now();
   users.push({ id, name, mobile, lenden, paid: 0, method });
-  transactions.push({ id: id + 1, userId: id, type: 'lenden', amount: lenden, date, method, time: new Date().toLocaleTimeString() });
-  activityLog.push({ action: 'CREATE', name, details: `নতুন গ্রাহক যোগ — ৳${lenden}`, time: new Date().toLocaleTimeString() });
+  transactions.push({ id: id + 1, userId: id, type: 'lenden', amount: lenden, date, method, note: 'নতুন গ্রাহক যোগ', time: new Date().toLocaleTimeString() });
+  activityLog.push({ action: 'CREATE_USER', name, details: `নতুন গ্রাহক যোগ — ৳${lenden} (${method})`, time: new Date().toLocaleTimeString() });
 
   saveAll();
   inName.value = inMobile.value = inLenden.value = '';
@@ -743,13 +861,13 @@ function saveEdit() {
 
   if (addL > 0) {
     u.lenden += addL;
-    transactions.push({ id: Date.now(), userId: u.id, type: 'lenden', amount: addL, date: d, method: lMethod, time: tm });
-    activityLog.push({ action: 'LENDEN', name: u.name, details: `নতুন ধার: ৳${addL} (${lMethod})`, time: tm });
+    transactions.push({ id: Date.now(), userId: u.id, type: 'lenden', amount: addL, date: d, method: lMethod, note: 'ধার বৃদ্ধি', time: tm });
+    activityLog.push({ action: 'ADD_LENDEN', name: u.name, details: `নতুন ধার: ৳${addL} (${lMethod})`, time: tm });
   }
   if (addP > 0) {
     u.paid += addP;
-    transactions.push({ id: Date.now() + 1, userId: u.id, type: 'paid', amount: addP, date: d, method: pMethod, time: tm });
-    activityLog.push({ action: 'PAYMENT', name: u.name, details: `জমা নেওয়া: ৳${addP} (${pMethod})`, time: tm });
+    transactions.push({ id: Date.now() + 1, userId: u.id, type: 'paid', amount: addP, date: d, method: pMethod, note: 'টাকা জমা', time: tm });
+    activityLog.push({ action: 'ADD_PAYMENT', name: u.name, details: `জমা নেওয়া: ৳${addP} (${pMethod})`, time: tm });
   }
 
   saveAll(); closeEditModal();
@@ -760,7 +878,7 @@ function deleteUser(id) {
   if (currentUserRole !== 'admin') return alert('🔒 আপনি সাধারণ ইউজার! কোনো ডাটা ডিলিট করার অনুমতি নেই।');
   if (!confirm('এই গ্রাহক এবং তার সব লেনদেন চিরতরে মুছে ফেলতে চান?')) return;
   const u = users.find(x => x.id === id);
-  if (u) activityLog.push({ action: 'DELETE', name: u.name, details: 'গ্রাহক মুছে ফেলা হয়েছে', time: new Date().toLocaleTimeString() });
+  if (u) activityLog.push({ action: 'DELETE_USER', name: u.name, details: 'গ্রাহক মুছে ফেলা হয়েছে', time: new Date().toLocaleTimeString() });
 
   users = users.filter(x => x.id !== id);
   transactions = transactions.filter(x => x.userId !== id);
@@ -770,8 +888,24 @@ function deleteUser(id) {
 }
 
 // ==========================================
-// 6. RENDERING (READ-ONLY FOR USERS)
+// 6. PRO RECEIPT & RENDERING
 // ==========================================
+function showReceipt(txId) {
+  const t = transactions.find(x => x.id === txId); if (!t) return;
+  const u = users.find(x => x.id === t.userId) || { name: 'Unknown', mobile: '-' };
+
+  rcpName.textContent = u.name;
+  rcpMobile.textContent = u.mobile;
+  rcpDate.textContent = t.date;
+  rcpType.textContent = t.type === 'lenden' ? 'Lenden Received' : 'Payment Received';
+  rcpMethod.textContent = t.method || '-';
+  rcpNote.textContent = t.note || '-';
+  rcpAmount.textContent = '৳' + t.amount;
+  rcpTrx.textContent = 'TrxID: BK' + String(t.id).replace('.', '').slice(-8).toUpperCase();
+  receiptModal.classList.add('active');
+}
+function closeReceipt() { receiptModal.classList.remove('active'); }
+
 function render() {
   const q = (search.value || '').toLowerCase();
   const filtered = users.filter(u => {
@@ -783,12 +917,10 @@ function render() {
     return true;
   });
 
-  userCount.textContent = filtered.length;
+  userCount.textContent = filtered.length + ' user';
   userList.innerHTML = filtered.map(u => {
     const due = u.lenden - u.paid;
-    let num = u.mobile.replace(/[^0-9]/g, '');
-    if (num.startsWith('0')) num = '88' + num;
-    const wa = `https://wa.me/${num}?text=${encodeURIComponent(`বকেয়া: ৳${due}`)}`;
+    const waUrl = getWhatsAppUrl(u.mobile, u.name, due);
 
     const adminActionButtons = currentUserRole === 'admin' ? `
       <button class="btn-edit" onclick="openEditUser(${u.id})">✏️ Edit</button>
@@ -807,7 +939,7 @@ function render() {
           <div><div class="label">বাকি</div><div class="val due">৳${Math.max(0, due)}</div></div>
         </div>
         <div class="user-card-actions">
-          ${due > 0 ? `<a class="btn-wa" href="${wa}" target="_blank">💬 তাগাদা</a>` : ''}
+          ${due > 0 ? `<a class="btn-wa" href="${waUrl}" target="_blank">💬 তাগাদা</a>` : ''}
           ${adminActionButtons}
         </div>
       </div>
@@ -833,7 +965,7 @@ function render() {
   mVipLenden.textContent = '৳' + m.VIP.l; mVipPaid.textContent = '৳' + m.VIP.p;
   mCashLenden.textContent = '৳' + m.Cash.l; mCashPaid.textContent = '৳' + m.Cash.p;
 
-  drawChart();
+  drawAnalyticsChart();
 }
 
 function openDetail(id) { currentUserId = id; switchPage('userDetail'); }
@@ -859,7 +991,7 @@ function renderUserDetail() {
     ${adminDetailActions}
     <div class="section-title"><span>📱 লেনদেনের ইতিহাস (${txs.length})</span></div>
     ${txs.map(t => `
-      <div class="bkash-tx">
+      <div class="bkash-tx" onclick="showReceipt(${t.id})">
         <div class="bkash-icon ${t.type}">${t.type === 'lenden' ? '↓' : '↑'}</div>
         <div class="bkash-info">
           <div style="font-weight:700;font-size:13px;">${t.type === 'lenden' ? 'ধার গ্রহণ' : 'পরিশোধ/জমা'} (${t.method || '-'})</div>
@@ -877,7 +1009,7 @@ function renderTxPage() {
   txListFull.innerHTML = transactions.slice().reverse().map(t => {
     const u = users.find(x => x.id === t.userId) || { name: 'Unknown' };
     return `
-      <div class="bkash-tx">
+      <div class="bkash-tx" onclick="showReceipt(${t.id})">
         <div class="bkash-icon ${t.type}">${t.type === 'lenden' ? '↓' : '↑'}</div>
         <div class="bkash-info">
           <div style="font-weight:700;font-size:13px;">${u.name}</div>
@@ -893,7 +1025,7 @@ function renderTxPage() {
 
 function renderLog() {
   logList.innerHTML = activityLog.slice().reverse().map(l => `
-    <div style="background:#fff;padding:10px 14px;border-radius:10px;margin-bottom:8px;font-size:12px;">
+    <div style="background:#fff;padding:10px 14px;border-radius:10px;margin-bottom:8px;font-size:12px;border-left:3px solid #e2136e;">
       <div style="display:flex;justify-content:space-between;color:#888;"><span>${l.action}</span><span>${l.time}</span></div>
       <div style="font-weight:700;margin-top:2px;">${l.name}</div>
       <div style="color:#555;">${l.details}</div>
@@ -901,15 +1033,25 @@ function renderLog() {
   `).join('') || '<div class="empty-state">কোনো লগ নেই</div>';
 }
 
+// Calculator
 function openCalcModal() { calcModalOverlay.classList.add('active'); }
 function closeCalcModal() { calcModalOverlay.classList.remove('active'); }
 function applyPresetRate(r) { currentSelectedRate = r; calculateRate(); }
+function applyCustomRate() {
+  const c = parseFloat(calcCustomRate.value);
+  if (!isNaN(c) && c > 0) { currentSelectedRate = c; calculateRate(); }
+}
 function calculateRate() {
   const th = parseFloat(calcThousandInput.value) || 0;
   calcResultDisplay.textContent = (th * currentSelectedRate).toFixed(2);
 }
 
-function drawChart() {
+function setChartRange(r) {
+  chartRange = r;
+  drawAnalyticsChart();
+}
+
+function drawAnalyticsChart() {
   const canvas = analyticsCanvas; if (!canvas) return;
   const ctx = canvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
@@ -939,14 +1081,27 @@ function drawChart() {
   });
 }
 
+// Pro Exports
+function exportJSON() {
+  const blob = new Blob([JSON.stringify({ users, transactions, activityLog }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `bkash_${new Date().toISOString().slice(0,10)}.json`; a.click();
+}
+function exportCSV() {
+  if (!transactions.length) return alert('কোনো লেনদেন নেই!');
+  const rows = [['TrxID','Date','Time','User','Type','Amount','Method'], ...transactions.map(t => [t.id, t.date, t.time||'', users.find(u=>u.id===t.userId)?.name||'', t.type, t.amount, t.method])];
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\uFEFF' + rows.map(r=>r.join(',')).join('\n')], {type:'text/csv'})); a.download = 'bkash_tx.csv'; a.click();
+}
+function printPDFStatement() { window.print(); }
+
 function deleteAllData() {
   if (currentUserRole !== 'admin') return alert('⚠️ শুধুমাত্র অ্যাডমিন ডাটা মুছতে পারবে!');
   if (confirm('সব ডাটা মুছে ফেলতে চান?') && prompt('টাইপ করুন DELETE') === 'DELETE') {
     users = []; transactions = []; activityLog = []; saveAll();
+    alert('🗑️ সমস্ত তথ্য মুছে ফেলা হয়েছে!');
   }
 }
 
-// Initial Boot
+// Startup
 inDate.value = new Date().toISOString().slice(0, 10);
 initFirebase();
 checkRoleGateway();
