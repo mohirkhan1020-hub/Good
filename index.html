@@ -38,6 +38,15 @@
   .gw-btn.admin { background:linear-gradient(135deg, #1e3c72, #2a5298); color:#fff; }
   .gw-btn.user { background:linear-gradient(135deg, #e2136e, #b8004f); color:#fff; }
 
+  /* FINGERPRINT FAST BUTTON */
+  .bio-btn {
+    width:100%; padding:14px; background:linear-gradient(135deg,#28a745,#1e7e34);
+    color:#fff; border:none; border-radius:14px; font-size:14px; font-weight:700;
+    cursor:pointer; margin-top:10px; display:none; align-items:center; justify-content:center; gap:8px;
+    box-shadow:0 4px 12px rgba(40,167,69,.25);
+  }
+  .bio-btn:active { transform:scale(.98); }
+
   /* ADMIN LOGIN MODAL */
   .admin-login-box {
     display:none; margin-top:16px; background:#f8f9fa; border-radius:14px; padding:16px; border:1px solid #ddd;
@@ -98,7 +107,6 @@
   .method-summary-card.cash { border-left-color:#28a745; }
   .method-summary-card .m-head { display:flex; justify-content:space-between; font-size:12px; font-weight:700; margin-bottom:4px; }
   .method-summary-card .m-row { display:flex; justify-content:space-between; font-size:11px; color:#666; margin-top:2px; }
-  .method-summary-card .m-row strong { color:#222; font-weight:700; }
 
   .quick-calc-trigger {
     background: linear-gradient(135deg, #1e3c72, #2a5298); color:#fff; border:none; width:100%; padding:12px 14px;
@@ -197,11 +205,16 @@
       </button>
     </div>
 
+    <!-- FINGERPRINT BUTTON (AUTO APPEARS IF ENABLED) -->
+    <button class="bio-btn" id="btnBiometricFast" onclick="authenticateBiometrics()">
+      <span>👆 Fingerprint / Face ID দিয়ে আনলক</span>
+    </button>
+
     <!-- ADMIN GMAIL / PASS LOGIN -->
     <div class="admin-login-box" id="adminLoginBox">
-      <div style="font-size:12px;font-weight:700;margin-bottom:8px;color:#1e3c72;">এডমিন জিমেইল দিয়ে লগইন করুন</div>
+      <div style="font-size:12px;font-weight:700;margin-bottom:8px;color:#1e3c72;">এডমিন জিমেইল ও পাসওয়ার্ড দিন</div>
       <input type="email" id="adminEmailInput" placeholder="Admin Gmail">
-      <input type="password" id="adminPassInput" placeholder="Password / PIN (ডিফল্ট: 1234)">
+      <input type="password" id="adminPassInput" placeholder="Password (ডিফল্ট: 1234)">
       <button onclick="loginAsAdmin()">লগইন করুন</button>
     </div>
   </div>
@@ -299,15 +312,25 @@
   <!-- PAGE 6: SETTINGS -->
   <div class="page" id="pageSettings">
     <div class="section-title"><span>⚙️ Settings</span></div>
+    
+    <!-- BIOMETRIC SETTING IN APP -->
+    <div class="form-box admin-only-feature">
+      <div style="font-weight:700;margin-bottom:4px;">👆 Biometric Security</div>
+      <div style="font-size:12px;color:#666;margin-bottom:12px;">ফোনের আসল Fingerprint বা Face ID সেট করুন।</div>
+      <button onclick="setupBiometrics()" style="background:#28a745;color:#fff;border:none;padding:12px;border-radius:10px;width:100%;font-weight:700;cursor:pointer;">Enable Fingerprint / Face ID</button>
+    </div>
+
     <div class="form-box">
       <div style="font-weight:700;margin-bottom:4px;">🔥 Firebase Live Cloud Status</div>
       <div style="font-size:12px;color:#666;margin-bottom:12px;">আপনার লাইভ ক্লাউড ডাটাবেজ সক্রিয় আছে।</div>
       <button onclick="forceSync()" style="background:#1e3c72;color:#fff;border:none;padding:12px;border-radius:10px;width:100%;font-weight:700;">⚡ Force Push to Cloud</button>
     </div>
+    
     <div class="form-box admin-only-feature">
       <div style="font-weight:700;margin-bottom:8px;color:#dc3545;">🗑️ Admin Danger Zone</div>
       <button onclick="deleteAllData()" style="width:100%;padding:10px;background:#fff0f2;color:#dc3545;border:1px solid #ffd2d6;border-radius:8px;font-weight:700;cursor:pointer;">Delete All Data</button>
     </div>
+    
     <div class="form-box">
       <button onclick="switchAccount()" style="width:100%;padding:10px;background:#eee;border:none;border-radius:8px;font-weight:700;cursor:pointer;">🚪 Switch Account / Logout</button>
     </div>
@@ -380,12 +403,11 @@ const firebaseConfig = {
   appId: "1:719290502760:web:1f716941ae7ceb8de4b5dd"
 };
 
-// Data Store (Directly Connected to Firebase)
 let users = [];
 let transactions = [];
 let activityLog = [];
 
-// Current User Role: 'user' (Default / Read-Only) or 'admin' (Full Control)
+// Role: 'user' (Read-Only) or 'admin' (Full Access)
 let currentUserRole = sessionStorage.getItem('bkash_role') || null;
 
 let currentFilter = 'all';
@@ -401,7 +423,6 @@ function setCloudStatus(t, bg) {
   if (el) { el.textContent = t; el.style.background = bg; }
 }
 
-// Initialize Firebase with Live Auto-Sync across all phones
 function initFirebase() {
   try {
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
@@ -425,12 +446,10 @@ function initFirebase() {
         activityLog = [];
       }
 
-      // Save to local cache
       localStorage.setItem('bkash_users', JSON.stringify(users));
       localStorage.setItem('bkash_tx', JSON.stringify(transactions));
       localStorage.setItem('bkash_log_v2', JSON.stringify(activityLog));
 
-      // Re-render UI on all screens
       render();
       if (currentPage === 'tx') renderTxPage();
       if (currentPage === 'log') renderLog();
@@ -443,7 +462,6 @@ function initFirebase() {
   }
 }
 
-// Master Save Function (Only Admins Can Push to Cloud)
 function saveAll() {
   if (currentUserRole !== 'admin') {
     alert('⚠️ সাধারণ ইউজাররা কোনো তথ্য পরিবর্তন বা সেভ করতে পারবে না!');
@@ -477,10 +495,107 @@ function forceSync() {
 }
 
 // ==========================================
-// 2. DOUBLE PAGE ROLE GATEWAY SYSTEM
+// 2. BIOMETRIC (FINGERPRINT / FACE ID) SYSTEM
+// ==========================================
+async function setupBiometrics() {
+  if (!window.PublicKeyCredential) {
+    alert('❌ আপনার ফোনে বা ব্রাউজারে Biometric (Fingerprint/Face ID) সাপোর্ট নেই!');
+    return;
+  }
+
+  try {
+    const challenge = new Uint8Array(32);
+    window.crypto.getRandomValues(challenge);
+    const userId = new Uint8Array(16);
+    window.crypto.getRandomValues(userId);
+
+    const publicKeyCredentialCreationOptions = {
+      challenge: challenge,
+      rp: { name: "bKash Lenden Manager" },
+      user: {
+        id: userId,
+        name: "admin",
+        displayName: "Admin Master"
+      },
+      pubKeyCredParams: [{ alg: -7, type: "public-key" }],
+      authenticatorSelection: {
+        authenticatorAttachment: "platform",
+        userVerification: "required"
+      },
+      timeout: 60000
+    };
+
+    const credential = await navigator.credentials.create({
+      publicKey: publicKeyCredentialCreationOptions
+    });
+
+    if (credential) {
+      localStorage.setItem('bkash_bio_enabled', 'true');
+      localStorage.setItem('bkash_bio_id', btoa(String.fromCharCode(...new Uint8Array(credential.rawId))));
+      alert('✅ অভিনন্দন! আপনার Fingerprint / Face ID সফলভাবে সেট করা হয়েছে।');
+      checkRoleGateway();
+    }
+  } catch (err) {
+    console.error(err);
+    alert('❌ ফিঙ্গারপ্রিন্ট রেজিস্টার করতে ব্যর্থ হয়েছে বা বাতিল করা হয়েছে!');
+  }
+}
+
+async function authenticateBiometrics() {
+  if (!window.PublicKeyCredential || localStorage.getItem('bkash_bio_enabled') !== 'true') {
+    alert('⚠️ আগে অ্যাডমিন পাসওয়ার্ড দিয়ে ঢুকে সেটিংস থেকে Fingerprint অন করুন!');
+    return;
+  }
+
+  try {
+    const challenge = new Uint8Array(32);
+    window.crypto.getRandomValues(challenge);
+
+    const credentialIdStr = atob(localStorage.getItem('bkash_bio_id'));
+    const credentialId = new Uint8Array(credentialIdStr.length);
+    for (let i = 0; i < credentialIdStr.length; i++) {
+      credentialId[i] = credentialIdStr.charCodeAt(i);
+    }
+
+    const publicKeyCredentialRequestOptions = {
+      challenge: challenge,
+      allowCredentials: [{
+        id: credentialId,
+        type: 'public-key',
+        transports: ['internal']
+      }],
+      userVerification: "required",
+      timeout: 60000
+    };
+
+    const assertion = await navigator.credentials.get({
+      publicKey: publicKeyCredentialRequestOptions
+    });
+
+    if (assertion) {
+      currentUserRole = 'admin';
+      sessionStorage.setItem('bkash_role', 'admin');
+      document.getElementById('roleGateway').classList.add('hidden');
+      applyRoleUI();
+      alert('🔓 Fingerprint ভেরিফিকেশন সফল! স্বাগতম এডমিন।');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('❌ ফিঙ্গারপ্রিন্ট মেলেনি বা বাতিল করা হয়েছে!');
+  }
+}
+
+// ==========================================
+// 3. ROLE GATEWAY & ADMIN LOGIN
 // ==========================================
 function checkRoleGateway() {
   const gate = document.getElementById('roleGateway');
+  const bioBtn = document.getElementById('btnBiometricFast');
+
+  if (localStorage.getItem('bkash_bio_enabled') === 'true' && bioBtn) {
+    bioBtn.style.display = 'flex';
+  }
+
   if (!currentUserRole) {
     gate.classList.remove('hidden');
   } else {
@@ -489,43 +604,44 @@ function checkRoleGateway() {
   }
 }
 
-// Enter as User (No Password, Read-Only)
 function enterAsUser() {
   currentUserRole = 'user';
   sessionStorage.setItem('bkash_role', 'user');
   document.getElementById('roleGateway').classList.add('hidden');
   applyRoleUI();
-  alert('👤 আপনি সাধারণ ইউজার হিসেবে প্রবেশ করেছেন। আপনি সব তথ্য দেখতে পারবেন কিন্তু পরিবর্তন করতে পারবেন না।');
+  alert('👤 আপনি সাধারণ ইউজার মোডে আছেন। সব তথ্য দেখতে পারবেন কিন্তু পরিবর্তন করতে পারবেন না।');
 }
 
-// Toggle Admin Login Inputs
 function toggleAdminLoginForm() {
-  const box = document.getElementById('adminLoginBox');
-  box.classList.toggle('active');
+  document.getElementById('adminLoginBox').classList.toggle('active');
 }
 
-/// Admin Gmail & Password Verification
 function loginAsAdmin() {
-  const email = document.getElementById('adminEmailInput').value.trim().toLowerCase();
+  const email = document.getElementById('adminEmailInput').value.trim();
   const pass = document.getElementById('adminPassInput').value.trim();
 
-  // 👉👉 এখানে আপনার নিজস্ব জিমেইল ও পাসওয়ার্ড লিখুন:
-  const MY_ADMIN_GMAIL = "mohirkhan068@gmail.com";  // উদাহরণ: আপনার আসল জিমেইল দিন
-  const MY_ADMIN_PASSWORD = "36964646";  // উদাহরণ: আপনার সিক্রেট পাসওয়ার্ড দিন
+  if (!email || !email.includes('@')) {
+    alert('❌ সঠিক জিমেইল দিন!');
+    return;
+  }
 
-  if (email === MY_ADMIN_GMAIL.toLowerCase() && pass === MY_ADMIN_PASSWORD) {
+  if (pass === '1234') { // Default password
     currentUserRole = 'admin';
     sessionStorage.setItem('bkash_role', 'admin');
     sessionStorage.setItem('bkash_admin_email', email);
     document.getElementById('roleGateway').classList.add('hidden');
     applyRoleUI();
-    alert('🛡️ স্বাগতম এডমিন! আপনার সম্পূর্ণ কন্ট্রোল ওপেন হয়েছে।');
+
+    if (localStorage.getItem('bkash_bio_enabled') !== 'true' && window.PublicKeyCredential) {
+      if (confirm('👆 আপনি কি পরবর্তী সময়ের জন্য Fingerprint / Face ID সেট করতে চান?')) {
+        setupBiometrics();
+      }
+    }
   } else {
-    alert('❌ ভুল জিমেইল অথবা পাসওয়ার্ড! আপনি এডমিন হিসেবে প্রবেশ করতে পারছেন না।');
+    alert('❌ ভুল পাসওয়ার্ড! সঠিক পাসওয়ার্ড দিন (Default: 1234)');
   }
 }
 
-// Switch Account / Logout
 function switchAccount() {
   sessionStorage.removeItem('bkash_role');
   sessionStorage.removeItem('bkash_admin_email');
@@ -533,7 +649,6 @@ function switchAccount() {
   location.reload();
 }
 
-// Hide or Show Edit/Delete buttons based on role
 function applyRoleUI() {
   const roleBadge = document.getElementById('roleIndicator');
   if (roleBadge) {
@@ -542,7 +657,6 @@ function applyRoleUI() {
     roleBadge.style.color = '#fff';
   }
 
-  // Hide admin elements for normal users
   const adminElements = document.querySelectorAll('.admin-only-feature');
   adminElements.forEach(el => {
     el.style.display = currentUserRole === 'admin' ? '' : 'none';
@@ -552,11 +666,11 @@ function applyRoleUI() {
 }
 
 // ==========================================
-// 3. NAVIGATION SYSTEM
+// 4. NAVIGATION SYSTEM
 // ==========================================
 function switchPage(p) {
   if (p === 'add' && currentUserRole !== 'admin') {
-    alert('⚠️ ইউজারদের নতুন গ্রাহক যোগ করার অনুমতি নেই!');
+    alert('⚠️ সাধারণ ইউজারদের নতুন গ্রাহক যোগ করার অনুমতি নেই!');
     return;
   }
 
@@ -585,7 +699,7 @@ function setFilter(f) {
 }
 
 // ==========================================
-// 4. USER & TRANSACTION ACTIONS
+// 5. USER & TRANSACTION ACTIONS
 // ==========================================
 function addUser() {
   if (currentUserRole !== 'admin') return alert('⚠️ শুধুমাত্র অ্যাডমিন নতুন গ্রাহক যোগ করতে পারে!');
@@ -656,7 +770,7 @@ function deleteUser(id) {
 }
 
 // ==========================================
-// 5. RENDERING (READ-ONLY FOR USERS)
+// 6. RENDERING (READ-ONLY FOR USERS)
 // ==========================================
 function render() {
   const q = (search.value || '').toLowerCase();
@@ -676,7 +790,6 @@ function render() {
     if (num.startsWith('0')) num = '88' + num;
     const wa = `https://wa.me/${num}?text=${encodeURIComponent(`বকেয়া: ৳${due}`)}`;
 
-    // Show/Hide Edit & Delete Buttons Based on Admin Login
     const adminActionButtons = currentUserRole === 'admin' ? `
       <button class="btn-edit" onclick="openEditUser(${u.id})">✏️ Edit</button>
       <button class="btn-del" onclick="deleteUser(${u.id})">🗑️ Delete</button>
@@ -788,7 +901,6 @@ function renderLog() {
   `).join('') || '<div class="empty-state">কোনো লগ নেই</div>';
 }
 
-// Standalone Calc
 function openCalcModal() { calcModalOverlay.classList.add('active'); }
 function closeCalcModal() { calcModalOverlay.classList.remove('active'); }
 function applyPresetRate(r) { currentSelectedRate = r; calculateRate(); }
@@ -834,7 +946,7 @@ function deleteAllData() {
   }
 }
 
-// Startup
+// Initial Boot
 inDate.value = new Date().toISOString().slice(0, 10);
 initFirebase();
 checkRoleGateway();
