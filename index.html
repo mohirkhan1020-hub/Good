@@ -12,25 +12,25 @@
 
 <style>
   * { margin:0; padding:0; box-sizing:border-box; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; -webkit-tap-highlight-color:transparent; }
-  body { background:#f0f2f5; color:#333; padding-bottom:70px; overflow-x:hidden; }
-  input, select, button { font-family:inherit; font-size:15px; }
+  body { background:#f0f2f5; color:#333; padding-bottom:75px; overflow-x:hidden; }
+  input, select, button { font-family:inherit; font-size:14px; }
 
-  /* DOUBLE PAGE ROLE GATEWAY */
+  /* ROLE GATEWAY (USER vs ADMIN) */
   .role-gateway {
     position:fixed; inset:0; background:#f0f2f5; z-index:99999;
-    display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; padding:18px;
   }
   .role-gateway.hidden { display:none; }
   .gateway-card {
-    background:#fff; border-radius:24px; padding:30px 22px; max-width:380px; width:100%;
+    background:#fff; border-radius:24px; padding:28px 20px; max-width:360px; width:100%;
     text-align:center; box-shadow:0 12px 35px rgba(0,0,0,.12);
   }
-  .gateway-card .logo { width:65px; height:65px; background:linear-gradient(135deg,#e2136e,#b8004f); border-radius:50%; margin:0 auto 14px; display:flex; align-items:center; justify-content:center; font-size:30px; color:#fff; }
-  .gateway-card h2 { font-size:22px; font-weight:800; color:#222; margin-bottom:6px; }
-  .gateway-card p { font-size:13px; color:#777; margin-bottom:24px; }
-  .gateway-btns { display:flex; flex-direction:column; gap:12px; }
+  .gateway-card .logo { width:60px; height:60px; background:linear-gradient(135deg,#e2136e,#b8004f); border-radius:50%; margin:0 auto 12px; display:flex; align-items:center; justify-content:center; font-size:28px; color:#fff; }
+  .gateway-card h2 { font-size:20px; font-weight:800; color:#222; margin-bottom:4px; }
+  .gateway-card p { font-size:12px; color:#777; margin-bottom:20px; }
+  .gateway-btns { display:flex; flex-direction:column; gap:10px; }
   .gw-btn {
-    border:none; border-radius:14px; padding:15px; font-size:15px; font-weight:700;
+    border:none; border-radius:14px; padding:14px; font-size:14px; font-weight:700;
     cursor:pointer; display:flex; align-items:center; justify-content:space-between;
     transition:transform .15s;
   }
@@ -38,7 +38,7 @@
   .gw-btn.admin { background:linear-gradient(135deg, #1e3c72, #2a5298); color:#fff; }
   .gw-btn.user { background:linear-gradient(135deg, #e2136e, #b8004f); color:#fff; }
 
-  /* BIOMETRICS BUTTON */
+  /* BIOMETRICS FAST BUTTON */
   .bio-btn {
     width:100%; padding:14px; background:linear-gradient(135deg,#28a745,#1e7e34);
     color:#fff; border:none; border-radius:14px; font-size:14px; font-weight:700;
@@ -48,11 +48,11 @@
   .bio-btn:active { transform:scale(.98); }
 
   .admin-login-box {
-    display:none; margin-top:16px; background:#f8f9fa; border-radius:14px; padding:16px; border:1px solid #ddd;
+    display:none; margin-top:14px; background:#f8f9fa; border-radius:14px; padding:14px; border:1px solid #ddd;
   }
   .admin-login-box.active { display:block; }
   .admin-login-box input {
-    width:100%; padding:11px; border:1px solid #ccc; border-radius:8px; margin-bottom:10px; font-size:14px;
+    width:100%; padding:10px; border:1px solid #ccc; border-radius:8px; margin-bottom:8px; font-size:14px;
   }
   .admin-login-box button {
     width:100%; padding:11px; background:#1e3c72; color:#fff; border:none; border-radius:8px; font-weight:700; cursor:pointer;
@@ -60,189 +60,182 @@
 
   .navbar {
     background: linear-gradient(135deg,#e2136e,#b8004f);
-    color:#fff; padding:12px 16px; display:flex; justify-content:space-between; align-items:center;
-    position:sticky; top:0; z-index:100; box-shadow:0 2px 10px rgba(0,0,0,.2);
+    color:#fff; padding:12px 14px; display:flex; justify-content:space-between; align-items:center;
+    position:sticky; top:0; z-index:100; box-shadow:0 2px 10px rgba(0,0,0,.15);
   }
   .navbar-left { display:flex; align-items:center; gap:8px; }
-  .navbar h1 { font-size:16px; font-weight:700; }
+  .navbar h1 { font-size:15px; font-weight:700; }
   .navbar .back-btn {
-    background:rgba(255,255,255,.2); border:none; color:#fff; width:34px; height:34px;
-    border-radius:50%; font-size:18px; cursor:pointer; display:none; align-items:center; justify-content:center;
+    background:rgba(255,255,255,.2); border:none; color:#fff; width:32px; height:32px;
+    border-radius:50%; font-size:16px; cursor:pointer; display:none; align-items:center; justify-content:center;
   }
   .navbar .back-btn.show { display:flex; }
-  .navbar-right { display:flex; align-items:center; gap:8px; }
+  .navbar-right { display:flex; align-items:center; gap:6px; }
   .nav-calc-btn {
     background:rgba(255,255,255,.25); border:none; color:#fff;
-    padding:5px 10px; border-radius:14px; font-size:12px; font-weight:700;
+    padding:5px 9px; border-radius:12px; font-size:11px; font-weight:700;
     cursor:pointer; display:inline-flex; align-items:center; gap:4px;
   }
   .cloud-sync-badge {
-    font-size:11px; font-weight:700; background:rgba(255,255,255,.2);
-    padding:4px 9px; border-radius:14px; display:inline-flex; align-items:center; gap:4px;
+    font-size:10px; font-weight:700; background:rgba(255,255,255,.2);
+    padding:4px 8px; border-radius:12px; display:inline-flex; align-items:center; gap:3px;
   }
   .role-indicator {
     font-size:10px; font-weight:800; background:#fff; color:#e2136e;
-    padding:3px 8px; border-radius:10px; cursor:pointer;
+    padding:3px 7px; border-radius:10px; cursor:pointer;
   }
 
-  .container { padding:14px; max-width:1200px; margin:auto; }
+  .container { padding:12px; max-width:800px; margin:auto; }
   .page { display:none; }
   .page.active { display:block; }
 
-  /* BALANCE OVERVIEW */
+  /* LIFETIME TURNOVER CARD (NEVER DELETES) */
+  .lifetime-card {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+    color:#fff; border-radius:16px; padding:14px 16px;
+    margin-bottom:10px; box-shadow:0 4px 16px rgba(17,153,142,.25);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .lifetime-card .l-info h4 { font-size:11px; opacity:.95; font-weight:600; text-transform:uppercase; letter-spacing:.4px; }
+  .lifetime-card .l-info .amount { font-size:22px; font-weight:900; margin-top:2px; }
+  .lifetime-card .l-icon { font-size:26px; background:rgba(255,255,255,.2); width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+
+  /* CURRENT BALANCE OVERVIEW */
   .balance-card {
     background: linear-gradient(135deg,#e2136e,#b8004f);
-    color:#fff; border-radius:16px; padding:18px;
-    margin-bottom:12px; box-shadow:0 6px 20px rgba(226,19,110,.3);
+    color:#fff; border-radius:16px; padding:16px;
+    margin-bottom:10px; box-shadow:0 6px 18px rgba(226,19,110,.25);
   }
-  .balance-card h3 { font-size:12px; opacity:.9; font-weight:500; }
-  .balance-card .big { font-size:28px; font-weight:700; margin:4px 0; }
+  .balance-card h3 { font-size:11px; opacity:.9; font-weight:500; }
+  .balance-card .big { font-size:26px; font-weight:700; margin:2px 0; }
   .balance-card .sub {
-    display:grid; grid-template-columns:repeat(3,1fr); gap:10px;
-    margin-top:12px; font-size:11px; opacity:.95;
+    display:grid; grid-template-columns:repeat(3,1fr); gap:8px;
+    margin-top:10px; font-size:10px; opacity:.95;
   }
-  .balance-card .sub div span { display:block; font-size:14px; font-weight:700; margin-top:2px; }
+  .balance-card .sub div span { display:block; font-size:13px; font-weight:700; margin-top:2px; }
 
-  /* METHOD BREAKDOWN CARDS */
-  .method-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; margin-bottom:14px; }
+  /* METHOD BREAKDOWN */
+  .method-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; margin-bottom:12px; }
   .method-summary-card {
-    background:#fff; border-radius:12px; padding:10px 12px;
-    box-shadow:0 2px 6px rgba(0,0,0,.05); border-left:3px solid #ccc;
+    background:#fff; border-radius:12px; padding:9px 11px;
+    box-shadow:0 2px 6px rgba(0,0,0,.04); border-left:3px solid #ccc;
   }
   .method-summary-card.bkash { border-left-color:#e2136e; }
   .method-summary-card.nagad { border-left-color:#f6921e; }
   .method-summary-card.vip { border-left-color:#6f42c1; }
   .method-summary-card.cash { border-left-color:#28a745; }
-  .method-summary-card .m-head { display:flex; justify-content:space-between; align-items:center; font-size:12px; font-weight:700; margin-bottom:4px; }
-  .method-summary-card .m-row { display:flex; justify-content:space-between; font-size:11px; color:#666; margin-top:2px; }
-  .method-summary-card .m-row strong { color:#222; font-weight:700; }
+  .method-summary-card .m-head { display:flex; justify-content:space-between; font-size:11.5px; font-weight:700; margin-bottom:3px; }
+  .method-summary-card .m-row { display:flex; justify-content:space-between; font-size:10.5px; color:#666; margin-top:2px; }
 
-  .quick-tool-bar { margin-bottom:14px; }
+  .quick-tool-bar { margin-bottom:12px; }
   .quick-calc-trigger {
     background: linear-gradient(135deg, #1e3c72, #2a5298);
-    color:#fff; border:none; width:100%; padding:12px 14px;
-    border-radius:12px; font-size:13px; font-weight:700;
+    color:#fff; border:none; width:100%; padding:11px 13px;
+    border-radius:12px; font-size:12.5px; font-weight:700;
     cursor:pointer; display:flex; align-items:center; justify-content:space-between;
-    box-shadow:0 3px 10px rgba(30,60,114,.25);
+    box-shadow:0 3px 10px rgba(30,60,114,.2);
   }
 
-  /* ANALYTICS */
-  .analytics-card { background:#fff; border-radius:14px; padding:14px; margin-bottom:14px; box-shadow:0 2px 8px rgba(0,0,0,.08); }
-  .analytics-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-  .chart-container { position:relative; width:100%; height:140px; }
+  .analytics-card { background:#fff; border-radius:14px; padding:12px; margin-bottom:12px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+  .analytics-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .chart-container { position:relative; width:100%; height:130px; }
   #analyticsCanvas { width:100%; height:100%; display:block; }
-  .chart-legend { display:flex; justify-content:center; gap:16px; margin-top:8px; font-size:11px; color:#666; font-weight:600; }
-  .chart-legend span { display:flex; align-items:center; gap:5px; }
-  .chart-legend i { width:10px; height:10px; border-radius:3px; display:inline-block; }
 
-  .filter-pills { display:flex; gap:8px; margin-bottom:12px; overflow-x:auto; }
-  .pill { padding:7px 13px; border:1px solid #ddd; background:#fff; border-radius:20px; font-size:11.5px; font-weight:700; color:#666; cursor:pointer; white-space:nowrap; }
+  .filter-pills { display:flex; gap:6px; margin-bottom:10px; overflow-x:auto; padding-bottom:2px; }
+  .pill { padding:6px 12px; border:1px solid #ddd; background:#fff; border-radius:20px; font-size:11px; font-weight:700; color:#666; cursor:pointer; white-space:nowrap; }
   .pill.active { background:#e2136e; color:#fff; border-color:#e2136e; }
 
-  .search-bar { display:flex; gap:8px; margin-bottom:12px; }
-  .search-bar input { flex:1; padding:12px 14px; border:1px solid #ddd; border-radius:10px; font-size:15px; background:#fff; outline:none; }
+  .search-bar { display:flex; gap:8px; margin-bottom:10px; }
+  .search-bar input { flex:1; padding:11px 13px; border:1px solid #ddd; border-radius:10px; font-size:14px; background:#fff; outline:none; }
 
-  .section-title { font-size:14px; color:#e2136e; font-weight:700; margin:14px 0 8px; display:flex; justify-content:space-between; align-items:center; }
-  .section-title .count { font-size:12px; color:#888; font-weight:500; }
-
+  .section-title { font-size:13px; color:#e2136e; font-weight:700; margin:12px 0 8px; display:flex; justify-content:space-between; }
+  
   /* USER CARDS */
   .user-card {
-    background:#fff; border-radius:14px; padding:14px; margin-bottom:10px;
-    box-shadow:0 2px 8px rgba(0,0,0,.08); cursor:pointer; border-left:4px solid #e2136e;
+    background:#fff; border-radius:14px; padding:12px; margin-bottom:9px;
+    box-shadow:0 2px 6px rgba(0,0,0,.06); border-left:4px solid #e2136e; cursor:pointer;
   }
   .user-card.clear { border-left-color:#28a745; }
   .user-card.due { border-left-color:#dc3545; }
-  .user-card-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
-  .user-card-header .name { font-weight:700; font-size:15px; color:#222; }
-  .user-card-header .mobile { font-size:12px; color:#888; margin-top:2px; }
-  .user-card-header .status { padding:3px 10px; border-radius:12px; font-size:11px; font-weight:700; }
+  .user-card-header { display:flex; justify-content:space-between; margin-bottom:8px; }
+  .user-card-header .name { font-weight:700; font-size:14px; color:#222; }
+  .user-card-header .mobile { font-size:11px; color:#888; margin-top:2px; }
+  .user-card-header .status { padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; }
   .status.clear { background:#d4edda; color:#155724; }
   .status.due { background:#f8d7da; color:#721c24; }
 
-  .user-card-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; background:#f8f9fa; border-radius:10px; padding:10px; text-align:center; }
-  .user-card-stats .label { font-size:10px; color:#888; margin-bottom:2px; }
-  .user-card-stats .val { font-size:14px; font-weight:700; }
-  .user-card-stats .val.lenden { color:#e2136e; }
-  .user-card-stats .val.paid { color:#28a745; }
-  .user-card-stats .val.due { color:#dc3545; }
+  .user-card-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; background:#f8f9fa; border-radius:10px; padding:8px; text-align:center; }
+  .user-card-stats .label { font-size:9.5px; color:#888; }
+  .user-card-stats .val { font-size:13px; font-weight:700; margin-top:1px; }
+  .val.lenden { color:#e2136e; } .val.paid { color:#28a745; } .val.due { color:#dc3545; }
 
-  .user-card-actions { display:flex; gap:8px; margin-top:10px; }
+  .user-card-actions { display:flex; gap:6px; margin-top:9px; }
   .user-card-actions button, .user-card-actions a {
-    flex:1; padding:9px; border:none; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;
-    text-align:center; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:4px;
+    flex:1; padding:8px; border:none; border-radius:8px; font-size:11.5px; font-weight:700; cursor:pointer;
+    text-align:center; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;
   }
   .btn-edit { background:#ff9800; color:#fff; }
   .btn-del { background:#dc3545; color:#fff; }
   .btn-wa { background:#25D366; color:#fff; }
 
-  .tx-date-header {
-    background:#f8f9fa; padding:10px 14px; margin-top:12px; font-size:12px; font-weight:700; color:#666;
-    border-radius:8px 8px 0 0; display:flex; justify-content:space-between;
-  }
-  .bkash-tx { display:flex; align-items:center; gap:12px; padding:13px 14px; background:#fff; border-bottom:1px solid #f5f5f5; cursor:pointer; }
-  .bkash-icon { width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:700; color:#fff; flex-shrink:0; }
+  .bkash-tx { display:flex; align-items:center; gap:10px; padding:11px 12px; background:#fff; border-bottom:1px solid #f5f5f5; cursor:pointer; }
+  .bkash-icon { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; color:#fff; flex-shrink:0; }
   .bkash-icon.lenden { background: linear-gradient(135deg,#e2136e,#b8004f); }
   .bkash-icon.paid { background: linear-gradient(135deg,#28a745,#1e7e34); }
   .bkash-info { flex:1; min-width:0; }
-  .bkash-info .bk-name { font-weight:700; font-size:14px; color:#222; }
-  .bkash-info .bk-meta { font-size:12px; color:#888; margin-top:2px; }
-  .bkash-amount { text-align:right; font-weight:700; font-size:15px; }
+  .bkash-info .bk-name { font-weight:700; font-size:13px; color:#222; }
+  .bkash-info .bk-meta { font-size:11px; color:#888; margin-top:2px; }
+  .bkash-amount { text-align:right; font-weight:700; font-size:14px; }
   .bkash-amount.out { color:#dc3545; }
   .bkash-amount.in { color:#28a745; }
 
-  .method-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; }
-  .method-bkash { background:#e2136e; color:#fff; }
-  .method-nagad { background:#f6921e; color:#fff; }
-  .method-vip { background:#6f42c1; color:#fff; }
-  .method-cash { background:#28a745; color:#fff; }
-
   .user-detail-header {
     background: linear-gradient(135deg,#e2136e,#b8004f);
-    color:#fff; border-radius:16px; padding:20px; margin-bottom:16px; text-align:center;
+    color:#fff; border-radius:16px; padding:18px; margin-bottom:14px; text-align:center;
   }
-  .user-detail-header .avatar { width:65px; height:65px; border-radius:50%; background:rgba(255,255,255,.25); margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:700; }
-  .user-detail-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:16px; background:rgba(255,255,255,.15); padding:12px; border-radius:12px; }
+  .user-detail-header .avatar { width:56px; height:56px; border-radius:50%; background:rgba(255,255,255,.25); margin:0 auto 8px; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:700; }
+  .user-detail-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-top:12px; background:rgba(255,255,255,.15); padding:10px; border-radius:10px; }
 
-  .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid #eee; display:flex; justify-content:space-around; padding:6px 0; z-index:100; }
+  .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid #eee; display:flex; justify-content:space-around; padding:5px 0; z-index:100; }
   .bottom-nav button { background:none; border:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:2px; color:#888; font-size:9.5px; font-weight:600; flex:1; }
   .bottom-nav button.active { color:#e2136e; font-weight:700; }
-  .bottom-nav button .ico { font-size:18px; }
+  .bottom-nav button .ico { font-size:17px; }
 
   .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:1000; align-items:center; justify-content:center; padding:14px; }
   .modal-overlay.active { display:flex; }
-  .receipt, .edit-modal, .calc-modal { background:#fff; border-radius:18px; max-width:440px; width:100%; max-height:92vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.3); }
+  .receipt, .edit-modal, .calc-modal { background:#fff; border-radius:18px; max-width:400px; width:100%; max-height:92vh; overflow-y:auto; box-shadow:0 15px 40px rgba(0,0,0,.25); }
 
   /* PRO CALCULATOR */
-  .calc-modal { border-radius:24px; padding:20px; }
-  .calc-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
-  .calc-input { width:100%; padding:12px 14px; border:2px solid #1e3c72; border-radius:12px; font-size:16px; font-weight:600; outline:none; margin-bottom:14px; }
-  .calc-result-box { border:2px dashed #1e3c72; border-radius:14px; padding:16px; text-align:center; margin-bottom:16px; }
-  .calc-result-box .c-val { font-size:32px; font-weight:800; color:#1e3c72; }
-  .calc-buttons-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
-  .calc-btn-pill { background:#1c355e; color:#fff; border:none; padding:12px; border-radius:24px; font-size:13px; font-weight:700; cursor:pointer; }
+  .calc-modal { border-radius:22px; padding:18px; }
+  .calc-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .calc-input { width:100%; padding:11px 13px; border:2px solid #1e3c72; border-radius:12px; font-size:15px; font-weight:600; outline:none; margin-bottom:12px; }
+  .calc-result-box { border:2px dashed #1e3c72; border-radius:12px; padding:14px; text-align:center; margin-bottom:12px; }
+  .calc-result-box .c-val { font-size:28px; font-weight:800; color:#1e3c72; }
+  .calc-buttons-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px; }
+  .calc-btn-pill { background:#1c355e; color:#fff; border:none; padding:11px; border-radius:20px; font-size:12px; font-weight:700; cursor:pointer; }
 
   /* PRO RECEIPT */
-  .receipt-header { background:linear-gradient(135deg,#e2136e,#b8004f); color:#fff; padding:22px 18px; text-align:center; border-radius:18px 18px 0 0; }
-  .receipt-header .logo { font-size:20px; font-weight:700; }
-  .receipt-body { padding:18px; }
-  .receipt-row { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px dashed #eee; font-size:13px; }
-  .receipt-footer { padding:0 18px 18px; text-align:center; }
-  .receipt-footer .trxid { background:#f0f2f5; padding:10px; border-radius:8px; font-family:monospace; margin-bottom:12px; font-size:12px; }
+  .receipt-header { background:linear-gradient(135deg,#e2136e,#b8004f); color:#fff; padding:20px 16px; text-align:center; border-radius:18px 18px 0 0; }
+  .receipt-header .logo { font-size:18px; font-weight:700; }
+  .receipt-body { padding:16px; }
+  .receipt-row { display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px dashed #eee; font-size:12.5px; }
+  .receipt-footer { padding:0 16px 16px; text-align:center; }
+  .receipt-footer .trxid { background:#f0f2f5; padding:9px; border-radius:8px; font-family:monospace; margin-bottom:10px; font-size:11.5px; }
 
-  .settings-group { margin-bottom:18px; }
-  .settings-group h3 { font-size:13px; font-weight:700; color:#555; margin-bottom:8px; }
-  .settings-card { background:#fff; border-radius:14px; box-shadow:0 2px 8px rgba(0,0,0,.06); overflow:hidden; }
-  .settings-btn { display:flex; align-items:center; gap:12px; padding:14px 16px; background:#fff; border:none; width:100%; text-align:left; cursor:pointer; border-bottom:1px solid #f2f2f2; }
+  .settings-group { margin-bottom:14px; }
+  .settings-group h3 { font-size:12px; font-weight:700; color:#555; margin-bottom:6px; }
+  .settings-card { background:#fff; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,.05); overflow:hidden; }
+  .settings-btn { display:flex; align-items:center; gap:10px; padding:12px 14px; background:#fff; border:none; width:100%; text-align:left; cursor:pointer; border-bottom:1px solid #f2f2f2; }
   .settings-btn .s-text { flex:1; }
-  .settings-btn .s-title { font-size:14px; font-weight:700; color:#222; }
-  .settings-btn .s-sub { font-size:11px; color:#888; margin-top:2px; }
+  .settings-btn .s-title { font-size:13px; font-weight:700; color:#222; }
+  .settings-btn .s-sub { font-size:10.5px; color:#888; margin-top:2px; }
 
-  .empty-state { padding:40px 20px; text-align:center; color:#999; font-size:14px; background:#fff; border-radius:12px; }
+  .empty-state { padding:35px 20px; text-align:center; color:#999; font-size:13px; background:#fff; border-radius:12px; }
 </style>
 </head>
 <body>
 
-<!-- GATEWAY SCREEN (USER vs ADMIN) -->
+<!-- GATEWAY SCREEN -->
 <div class="role-gateway" id="roleGateway">
   <div class="gateway-card">
     <div class="logo">৳</div>
@@ -259,14 +252,14 @@
       </button>
     </div>
 
-    <!-- BIOMETRIC FINGERPRINT FAST BUTTON -->
+    <!-- FINGERPRINT FAST BUTTON -->
     <button class="bio-btn" id="btnBiometricFast" onclick="authenticateBiometrics()">
       <span>👆 Fingerprint / Face ID দিয়ে আনলক</span>
     </button>
 
     <!-- ADMIN LOGIN FORM -->
     <div class="admin-login-box" id="adminLoginBox">
-      <div style="font-size:12px;font-weight:700;margin-bottom:8px;color:#1e3c72;">এডমিন জিমেইল ও পাসওয়ার্ড দিন</div>
+      <div style="font-size:11.5px;font-weight:700;margin-bottom:6px;color:#1e3c72;">এডমিন জিমেইল ও পাসওয়ার্ড দিন</div>
       <input type="email" id="adminEmailInput" placeholder="Admin Gmail">
       <input type="password" id="adminPassInput" placeholder="Password (ডিফল্ট: 1234)">
       <button onclick="loginAsAdmin()">লগইন করুন</button>
@@ -289,13 +282,25 @@
 <div class="container">
   <!-- PAGE 1: HOME -->
   <div class="page active" id="pageHome">
+
+    <!-- 🏆 PERMANENT LIFETIME MASTER TURNOVER CARD (NEVER DELETES) -->
+    <div class="lifetime-card">
+      <div class="l-info">
+        <h4>🏆 শুরু থেকে সর্বমোট লেনদেন (Lifetime Turnover)</h4>
+        <div class="amount" id="cardLifetimeTotal">৳0</div>
+        <div style="font-size:9.5px;opacity:.9;margin-top:2px;">*ইউজার ডিলিট করলেও এই হিসাব কখনো মুছবে না</div>
+      </div>
+      <div class="l-icon">💎</div>
+    </div>
+
+    <!-- CURRENT ACTIVE BALANCE -->
     <div class="balance-card">
-      <h3>Total Due (মোট বাকি)</h3>
+      <h3>Total Due (বর্তমান মোট বাকি)</h3>
       <div class="big" id="cardDue">৳0</div>
       <div class="sub">
-        <div>Lenden<span id="cardLenden">৳0</span></div>
-        <div>Paid<span id="cardPaid">৳0</span></div>
-        <div>Users<span id="cardUsers">0</span></div>
+        <div>Active Lenden<span id="cardLenden">৳0</span></div>
+        <div>Total Paid<span id="cardPaid">৳0</span></div>
+        <div>Active Users<span id="cardUsers">0</span></div>
       </div>
     </div>
 
@@ -316,10 +321,10 @@
 
     <div class="analytics-card">
       <div class="analytics-header">
-        <span style="font-size:13px;font-weight:700;">📊 ক্যাশফ্লো রিপোর্ট (Analytics)</span>
+        <span style="font-size:12.5px;font-weight:700;">📊 ক্যাশফ্লো রিপোর্ট (Analytics)</span>
         <div style="display:flex;gap:4px;">
-          <button onclick="setChartRange('7d')" style="padding:4px 8px;border-radius:6px;border:none;font-weight:700;font-size:11px;">৭ দিন</button>
-          <button onclick="setChartRange('6m')" style="padding:4px 8px;border-radius:6px;border:none;font-weight:700;font-size:11px;">৬ মাস</button>
+          <button onclick="setChartRange('7d')" style="padding:4px 8px;border-radius:6px;border:none;font-weight:700;font-size:10.5px;">৭ দিন</button>
+          <button onclick="setChartRange('6m')" style="padding:4px 8px;border-radius:6px;border:none;font-weight:700;font-size:10.5px;">৬ মাস</button>
         </div>
       </div>
       <div class="chart-container"><canvas id="analyticsCanvas"></canvas></div>
@@ -339,9 +344,9 @@
 
   <!-- PAGE 2: ADD USER (ADMIN ONLY) -->
   <div class="page" id="pageAddUser">
-    <div class="form-box" style="background:#fff;padding:18px;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.08);">
-      <h2 style="font-size:16px;color:#e2136e;font-weight:700;margin-bottom:14px;">➕ নতুন User যোগ করুন (Admin)</h2>
-      <div style="display:grid;gap:12px;">
+    <div class="form-box" style="background:#fff;padding:16px;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+      <h2 style="font-size:15px;color:#e2136e;font-weight:700;margin-bottom:12px;">➕ নতুন User যোগ করুন (Admin)</h2>
+      <div style="display:grid;gap:10px;">
         <input type="text" id="inName" placeholder="User Name (গ্রাহকের নাম)">
         <input type="text" id="inMobile" placeholder="Mobile Number (মোবাইল নম্বর)" inputmode="numeric">
         <input type="number" id="inLenden" placeholder="Lenden Amount ৳ (ধার/লেনদেন)" inputmode="numeric">
@@ -352,7 +357,7 @@
           <option value="VIP">💜 VIP</option>
           <option value="Cash">💵 Cash</option>
         </select>
-        <button onclick="addUser()" style="padding:14px;background:#e2136e;color:#fff;border:none;border-radius:10px;font-weight:700;font-size:16px;cursor:pointer;">Save User</button>
+        <button onclick="addUser()" style="padding:12px;background:#e2136e;color:#fff;border:none;border-radius:10px;font-weight:700;font-size:15px;cursor:pointer;">Save User</button>
       </div>
     </div>
   </div>
@@ -381,8 +386,8 @@
       <h3>👆 Biometric Fingerprint / Face ID</h3>
       <div class="settings-card">
         <div class="settings-btn" onclick="setupBiometrics()">
-          <div style="font-size:22px;">👆</div>
-          <div class="s-text"><div class="s-title">Enable Fingerprint / Face ID</div><div class="s-sub">পাসওয়ার্ড ছাড়া এক ক্লিকে আঙুল ছুঁয়ে আনলক করুন</div></div>
+          <div style="font-size:20px;">👆</div>
+          <div class="s-text"><div class="s-title">Enable Fingerprint / Face ID</div><div class="s-sub">আঙুল ছুঁয়ে এক ক্লিকে আনলক করুন</div></div>
           <div>➔</div>
         </div>
       </div>
@@ -392,8 +397,8 @@
       <h3>🔥 Firebase Realtime Live Cloud</h3>
       <div class="settings-card">
         <div class="settings-btn" onclick="forcePushToFirebase()">
-          <div style="font-size:22px;">⚡</div>
-          <div class="s-text"><div class="s-title" id="fbStatusText">Firebase Connected</div><div class="s-sub">সব মোবাইল থেকে লাইভ ডাটা সিঙ্ক হচ্ছে</div></div>
+          <div style="font-size:20px;">⚡</div>
+          <div class="s-text"><div class="s-title" id="fbStatusText">Firebase Connected</div><div class="s-sub">সব ডিভাইসে লাইভ ডাটা সিঙ্ক হচ্ছে</div></div>
           <div>➔</div>
         </div>
       </div>
@@ -402,22 +407,22 @@
     <div class="settings-group">
       <h3>📤 Pro Exports & Statements</h3>
       <div class="settings-card">
-        <div class="settings-btn" onclick="exportJSON()"><div style="font-size:22px;">💾</div><div class="s-text"><div class="s-title">JSON Offline Backup</div></div><div>➔</div></div>
-        <div class="settings-btn" onclick="exportCSV()"><div style="font-size:22px;">📊</div><div class="s-text"><div class="s-title">CSV Excel Export</div></div><div>➔</div></div>
-        <div class="settings-btn" onclick="printPDFStatement()"><div style="font-size:22px;">📄</div><div class="s-text"><div class="s-title">PDF Statement Print</div></div><div>➔</div></div>
+        <div class="settings-btn" onclick="exportJSON()"><div style="font-size:20px;">💾</div><div class="s-text"><div class="s-title">JSON Offline Backup</div></div><div>➔</div></div>
+        <div class="settings-btn" onclick="exportCSV()"><div style="font-size:20px;">📊</div><div class="s-text"><div class="s-title">CSV Excel Export</div></div><div>➔</div></div>
+        <div class="settings-btn" onclick="printPDFStatement()"><div style="font-size:20px;">📄</div><div class="s-text"><div class="s-title">PDF Statement Print</div></div><div>➔</div></div>
       </div>
     </div>
 
     <div class="settings-group admin-only-feature">
       <h3 style="color:#dc3545;">🗑️ Danger Zone</h3>
       <div class="settings-card" style="border:1px solid #ffd2d6;">
-        <div class="settings-btn" onclick="deleteAllData()"><div style="font-size:22px;">⚠️</div><div class="s-text"><div class="s-title" style="color:#dc3545;">Delete All Data</div></div><div>➔</div></div>
+        <div class="settings-btn" onclick="deleteAllData()"><div style="font-size:20px;">⚠️</div><div class="s-text"><div class="s-title" style="color:#dc3545;">Delete All Data</div></div><div>➔</div></div>
       </div>
     </div>
 
     <div class="settings-group">
       <div class="settings-card">
-        <div class="settings-btn" onclick="switchAccount()"><div style="font-size:22px;">🚪</div><div class="s-text"><div class="s-title">Switch Account / Logout</div></div><div>➔</div></div>
+        <div class="settings-btn" onclick="switchAccount()"><div style="font-size:20px;">🚪</div><div class="s-text"><div class="s-title">Switch Account / Logout</div></div><div>➔</div></div>
       </div>
     </div>
   </div>
@@ -437,23 +442,23 @@
   <div class="calc-modal">
     <div class="calc-header"><h3>🧮 প্রতি হাজারে হিসাব</h3><button onclick="closeCalcModal()" style="border:none;background:none;font-size:18px;cursor:pointer;">✕</button></div>
     <input type="number" id="calcThousandInput" class="calc-input" placeholder="যেমন: 5" inputmode="decimal" oninput="calculateRate()">
-    <div class="calc-result-box"><div class="c-val" id="calcResultDisplay">০.০০</div><div style="font-size:12px;color:#777;margin-top:2px;">ফলাফল</div></div>
+    <div class="calc-result-box"><div class="c-val" id="calcResultDisplay">০.০০</div><div style="font-size:11px;color:#777;margin-top:2px;">ফলাফল</div></div>
     <div class="calc-buttons-grid">
       <button class="calc-btn-pill" onclick="applyPresetRate(2.55)">২.৫৫ (খরচ ছাড়া)</button>
       <button class="calc-btn-pill" onclick="applyPresetRate(2.60)">২.৬০ (খরচ সহ)</button>
     </div>
-    <div style="display:flex;gap:8px;"><input type="number" id="calcCustomRate" placeholder="অন্য রেট" step="0.01" style="flex:1;padding:10px;border:1px solid #ddd;border-radius:10px;"><button onclick="applyCustomRate()" style="background:#28a745;color:#fff;border:none;padding:10px 14px;border-radius:10px;font-weight:700;">হিসাব</button></div>
+    <div style="display:flex;gap:6px;"><input type="number" id="calcCustomRate" placeholder="অন্য রেট" step="0.01" style="flex:1;padding:9px;border:1px solid #ddd;border-radius:10px;"><button onclick="applyCustomRate()" style="background:#28a745;color:#fff;border:none;padding:9px 12px;border-radius:10px;font-weight:700;">হিসাব</button></div>
   </div>
 </div>
 
-<!-- RECEIPT MODAL -->
+<!-- PRO RECEIPT MODAL -->
 <div class="modal-overlay" id="receiptModal" onclick="if(event.target.id==='receiptModal') closeReceipt()">
   <div class="receipt">
     <div class="receipt-header">
       <div class="logo">bKash</div>
-      <div id="rcpStatus" style="font-size:11px;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:10px;margin-top:6px;display:inline-block;">Successful</div>
-      <div id="rcpAmount" style="font-size:28px;font-weight:700;margin-top:8px;">৳0</div>
-      <div id="rcpType" style="font-size:12px;opacity:.9;margin-top:4px;">Lenden</div>
+      <div id="rcpStatus" style="font-size:10.5px;background:rgba(255,255,255,.2);padding:3px 9px;border-radius:10px;margin-top:6px;display:inline-block;">Successful</div>
+      <div id="rcpAmount" style="font-size:26px;font-weight:700;margin-top:6px;">৳0</div>
+      <div id="rcpType" style="font-size:11.5px;opacity:.9;margin-top:2px;">Lenden</div>
     </div>
     <div class="receipt-body">
       <div class="receipt-row"><span>User</span><strong id="rcpName">-</strong></div>
@@ -464,36 +469,36 @@
     </div>
     <div class="receipt-footer">
       <div class="trxid" id="rcpTrx">TrxID: -</div>
-      <button onclick="closeReceipt()" style="background:#e2136e;color:#fff;border:none;padding:12px;border-radius:20px;width:100%;font-weight:700;cursor:pointer;">Close</button>
+      <button onclick="closeReceipt()" style="background:#e2136e;color:#fff;border:none;padding:11px;border-radius:20px;width:100%;font-weight:700;cursor:pointer;">Close</button>
     </div>
   </div>
 </div>
 
 <!-- EDIT MODAL (ADMIN ONLY) -->
 <div class="modal-overlay" id="editModal" onclick="if(event.target.id==='editModal') closeEditModal()">
-  <div class="edit-modal" style="padding:18px;">
-    <h3 style="color:#e2136e;margin-bottom:12px;">✏️ লেনদেন আপডেট করুন (Admin)</h3>
-    <div id="editSummary" style="background:#fff2f6;padding:10px;border-radius:8px;font-size:12px;margin-bottom:12px;"></div>
-    <div style="display:grid;gap:10px;">
+  <div class="edit-modal" style="padding:16px;">
+    <h3 style="color:#e2136e;margin-bottom:10px;font-size:15px;">✏️ লেনদেন আপডেট করুন (Admin)</h3>
+    <div id="editSummary" style="background:#fff2f6;padding:9px;border-radius:8px;font-size:11.5px;margin-bottom:10px;"></div>
+    <div style="display:grid;gap:9px;">
       <input type="text" id="editName" placeholder="নাম">
       <input type="text" id="editMobile" placeholder="মোবাইল">
-      <div style="border-top:1px dashed #ddd;padding-top:8px;">
-        <label style="font-size:11px;color:#e2136e;font-weight:700;">💸 নতুন ধার (+Lenden):</label>
-        <input type="number" id="editAddLenden" value="0" style="width:100%;padding:10px;margin-top:4px;border:1px solid #ddd;border-radius:8px;">
-        <select id="editLendenMethod" style="width:100%;padding:10px;margin-top:4px;border:1px solid #ddd;border-radius:8px;">
+      <div style="border-top:1px dashed #ddd;padding-top:7px;">
+        <label style="font-size:10.5px;color:#e2136e;font-weight:700;">💸 নতুন ধার (+Lenden):</label>
+        <input type="number" id="editAddLenden" value="0" style="width:100%;padding:9px;margin-top:3px;border:1px solid #ddd;border-radius:8px;">
+        <select id="editLendenMethod" style="width:100%;padding:9px;margin-top:4px;border:1px solid #ddd;border-radius:8px;">
           <option value="bKash">📱 bKash</option><option value="Nagad">🟠 Nagad</option><option value="VIP">💜 VIP</option><option value="Cash">💵 Cash</option>
         </select>
       </div>
-      <div style="border-top:1px dashed #ddd;padding-top:8px;">
-        <label style="font-size:11px;color:#28a745;font-weight:700;">✅ জমা নিন (+Payment):</label>
-        <input type="number" id="editAddPaid" value="0" style="width:100%;padding:10px;margin-top:4px;border:1px solid #ddd;border-radius:8px;">
-        <select id="editPaidMethod" style="width:100%;padding:10px;margin-top:4px;border:1px solid #ddd;border-radius:8px;">
+      <div style="border-top:1px dashed #ddd;padding-top:7px;">
+        <label style="font-size:10.5px;color:#28a745;font-weight:700;">✅ জমা নিন (+Payment):</label>
+        <input type="number" id="editAddPaid" value="0" style="width:100%;padding:9px;margin-top:3px;border:1px solid #ddd;border-radius:8px;">
+        <select id="editPaidMethod" style="width:100%;padding:9px;margin-top:4px;border:1px solid #ddd;border-radius:8px;">
           <option value="bKash">📱 bKash</option><option value="Nagad">🟠 Nagad</option><option value="VIP">💜 VIP</option><option value="Cash">💵 Cash</option>
         </select>
       </div>
-      <div style="display:flex;gap:8px;margin-top:8px;">
-        <button onclick="closeEditModal()" style="flex:1;padding:11px;border:none;background:#ddd;border-radius:8px;cursor:pointer;">Cancel</button>
-        <button onclick="saveEdit()" style="flex:1;padding:11px;border:none;background:#e2136e;color:#fff;border-radius:8px;font-weight:700;cursor:pointer;">Save</button>
+      <div style="display:flex;gap:7px;margin-top:6px;">
+        <button onclick="closeEditModal()" style="flex:1;padding:10px;border:none;background:#ddd;border-radius:8px;cursor:pointer;">Cancel</button>
+        <button onclick="saveEdit()" style="flex:1;padding:10px;border:none;background:#e2136e;color:#fff;border-radius:8px;font-weight:700;cursor:pointer;">Save</button>
       </div>
     </div>
   </div>
@@ -516,7 +521,10 @@ let users = [];
 let transactions = [];
 let activityLog = [];
 
-// Current Role: 'user' (Read-Only) or 'admin' (Full Control)
+// 💎 PERMANENT LIFETIME MASTER TURNOVER (NEVER DELETES OR RESETS)
+let lifetimeMasterTotal = Number(localStorage.getItem('bkash_lifetime_master_total') || 0);
+
+// Role: 'user' (Read-Only) or 'admin' (Full Control)
 let currentUserRole = sessionStorage.getItem('bkash_role') || null;
 
 let currentFilter = 'all';
@@ -544,12 +552,18 @@ function initFirebase() {
       else setCloudStatus('🔴 Offline', '#dc3545');
     });
 
-    fbDb.ref('bkash_master_cloud_v3').on('value', snap => {
+    fbDb.ref('bkash_master_cloud_v5').on('value', snap => {
       const val = snap.val();
       if (val) {
         users = Array.isArray(val.users) ? val.users : [];
         transactions = Array.isArray(val.transactions) ? val.transactions : [];
         activityLog = Array.isArray(val.activityLog) ? val.activityLog : [];
+        
+        // Take the highest lifetime total so it never decreases
+        const remoteLifetime = Number(val.lifetimeMasterTotal || 0);
+        if (remoteLifetime > lifetimeMasterTotal) {
+          lifetimeMasterTotal = remoteLifetime;
+        }
       } else {
         users = [];
         transactions = [];
@@ -559,6 +573,7 @@ function initFirebase() {
       localStorage.setItem('bkash_users', JSON.stringify(users));
       localStorage.setItem('bkash_tx', JSON.stringify(transactions));
       localStorage.setItem('bkash_log_v2', JSON.stringify(activityLog));
+      localStorage.setItem('bkash_lifetime_master_total', lifetimeMasterTotal);
 
       render();
       if (currentPage === 'tx') renderTxPage();
@@ -572,7 +587,7 @@ function initFirebase() {
   }
 }
 
-// Master Save Function (Only Admin Can Save to Firebase)
+// Master Save Function (Only Admin Can Save to Cloud)
 function saveAll() {
   if (currentUserRole !== 'admin') {
     alert('⚠️ সাধারণ ইউজাররা কোনো তথ্য পরিবর্তন বা সেভ করতে পারবে না!');
@@ -582,13 +597,15 @@ function saveAll() {
   localStorage.setItem('bkash_users', JSON.stringify(users));
   localStorage.setItem('bkash_tx', JSON.stringify(transactions));
   localStorage.setItem('bkash_log_v2', JSON.stringify(activityLog));
+  localStorage.setItem('bkash_lifetime_master_total', lifetimeMasterTotal);
 
   if (fbDb) {
     setCloudStatus('☁️ সিঙ্ক হচ্ছে...', '#17a2b8');
-    fbDb.ref('bkash_master_cloud_v3').set({
+    fbDb.ref('bkash_master_cloud_v5').set({
       users: users,
       transactions: transactions,
       activityLog: activityLog,
+      lifetimeMasterTotal: lifetimeMasterTotal,
       updatedAt: Date.now()
     }).then(() => {
       setCloudStatus('🟢 Live Cloud', '#28a745');
@@ -610,7 +627,7 @@ function forcePushToFirebase() {
 // ==========================================
 async function setupBiometrics() {
   if (!window.PublicKeyCredential) {
-    alert('❌ আপনার ফোনে বা ব্রাউজারে Biometric (Fingerprint/Face ID) সাপোর্ট নেই!');
+    alert('❌ আপনার ফোনে Biometric (Fingerprint/Face ID) সাপোর্ট নেই!');
     return;
   }
 
@@ -643,7 +660,7 @@ async function setupBiometrics() {
     if (credential) {
       localStorage.setItem('bkash_bio_enabled', 'true');
       localStorage.setItem('bkash_bio_id', btoa(String.fromCharCode(...new Uint8Array(credential.rawId))));
-      alert('✅ অভিনন্দন! আপনার Fingerprint / Face ID সফলভাবে সেট করা হয়েছে। এখন থেকে আঙুল ছুঁয়েই এক ক্লিকে ঢুকতে পারবেন!');
+      alert('✅ অভিনন্দন! আপনার Fingerprint / Face ID সেট হয়েছে। এখন থেকে আঙুল ছুঁয়েই এক ক্লিকে ঢুকতে পারবেন!');
       checkRoleGateway();
     }
   } catch (err) {
@@ -720,7 +737,7 @@ function enterAsUser() {
   sessionStorage.setItem('bkash_role', 'user');
   document.getElementById('roleGateway').classList.add('hidden');
   applyRoleUI();
-  alert('👤 আপনি সাধারণ ইউজার মোডে আছেন। সব তথ্য দেখতে পারবেন কিন্তু পরিবর্তন করতে পারবেন না।');
+  alert('👤 আপনি সাধারণ ইউজার মোডে আছেন। সব হিসাব দেখতে পারবেন কিন্তু পরিবর্তন বা ডিলিট করতে পারবেন না।');
 }
 
 function toggleAdminLoginForm() {
@@ -817,7 +834,7 @@ function getWhatsAppUrl(mobile, name, due) {
 }
 
 // ==========================================
-// 5. USER & TRANSACTION ACTIONS
+// 5. USER & TRANSACTION ACTIONS (LIFETIME PROTECTED)
 // ==========================================
 function addUser() {
   if (currentUserRole !== 'admin') return alert('⚠️ শুধুমাত্র অ্যাডমিন নতুন গ্রাহক যোগ করতে পারে!');
@@ -830,6 +847,9 @@ function addUser() {
   users.push({ id, name, mobile, lenden, paid: 0, method });
   transactions.push({ id: id + 1, userId: id, type: 'lenden', amount: lenden, date, method, note: 'নতুন গ্রাহক যোগ', time: new Date().toLocaleTimeString() });
   activityLog.push({ action: 'CREATE_USER', name, details: `নতুন গ্রাহক যোগ — ৳${lenden} (${method})`, time: new Date().toLocaleTimeString() });
+
+  // 💎 Add to permanent lifetime master total:
+  lifetimeMasterTotal += lenden;
 
   saveAll();
   inName.value = inMobile.value = inLenden.value = '';
@@ -863,6 +883,9 @@ function saveEdit() {
     u.lenden += addL;
     transactions.push({ id: Date.now(), userId: u.id, type: 'lenden', amount: addL, date: d, method: lMethod, note: 'ধার বৃদ্ধি', time: tm });
     activityLog.push({ action: 'ADD_LENDEN', name: u.name, details: `নতুন ধার: ৳${addL} (${lMethod})`, time: tm });
+
+    // 💎 Increase permanent lifetime total:
+    lifetimeMasterTotal += addL;
   }
   if (addP > 0) {
     u.paid += addP;
@@ -876,10 +899,11 @@ function saveEdit() {
 
 function deleteUser(id) {
   if (currentUserRole !== 'admin') return alert('🔒 আপনি সাধারণ ইউজার! কোনো ডাটা ডিলিট করার অনুমতি নেই।');
-  if (!confirm('এই গ্রাহক এবং তার সব লেনদেন চিরতরে মুছে ফেলতে চান?')) return;
+  if (!confirm('এই গ্রাহককে মুছে ফেলতে চান? (মনে রাখবেন: শুরু থেকে মোট লেনদেনের হিসাব কখনো মুছবে না)')) return;
   const u = users.find(x => x.id === id);
   if (u) activityLog.push({ action: 'DELETE_USER', name: u.name, details: 'গ্রাহক মুছে ফেলা হয়েছে', time: new Date().toLocaleTimeString() });
 
+  // Notice: lifetimeMasterTotal remains completely safe and untouched!
   users = users.filter(x => x.id !== id);
   transactions = transactions.filter(x => x.userId !== id);
 
@@ -908,7 +932,7 @@ function closeReceipt() { receiptModal.classList.remove('active'); }
 
 function render() {
   const q = (search.value || '').toLowerCase();
-  const filtered = users.filter(u => {
+  const filteredUsers = users.filter(u => {
     const due = u.lenden - u.paid;
     const match = u.name.toLowerCase().includes(q) || u.mobile.includes(q);
     if (!match) return false;
@@ -917,8 +941,8 @@ function render() {
     return true;
   });
 
-  userCount.textContent = filtered.length + ' user';
-  userList.innerHTML = filtered.map(u => {
+  userCount.textContent = filteredUsers.length + ' user';
+  userList.innerHTML = filteredUsers.map(u => {
     const due = u.lenden - u.paid;
     const waUrl = getWhatsAppUrl(u.mobile, u.name, due);
 
@@ -946,11 +970,20 @@ function render() {
     `;
   }).join('') || '<div class="empty-state">কোনো গ্রাহক পাওয়া যায়নি</div>';
 
-  const tLenden = users.reduce((s, u) => s + u.lenden, 0);
-  const tPaid = users.reduce((s, u) => s + u.paid, 0);
-  cardLenden.textContent = '৳' + tLenden;
-  cardPaid.textContent = '৳' + tPaid;
-  cardDue.textContent = '৳' + Math.max(0, tLenden - tPaid);
+  const currentActiveLenden = users.reduce((s, u) => s + u.lenden, 0);
+  const totalPaid = users.reduce((s, u) => s + u.paid, 0);
+
+  // Auto-sync lifetime total if current active lenden is higher
+  if (currentActiveLenden > lifetimeMasterTotal) {
+    lifetimeMasterTotal = currentActiveLenden;
+    localStorage.setItem('bkash_lifetime_master_total', lifetimeMasterTotal);
+  }
+
+  // Display Permanent Lifetime & Active Balances
+  cardLifetimeTotal.textContent = '৳' + lifetimeMasterTotal;
+  cardDue.textContent = '৳' + Math.max(0, currentActiveLenden - totalPaid);
+  cardLenden.textContent = '৳' + currentActiveLenden;
+  cardPaid.textContent = '৳' + totalPaid;
   cardUsers.textContent = users.length;
 
   let m = { bKash: { l: 0, p: 0 }, Nagad: { l: 0, p: 0 }, VIP: { l: 0, p: 0 }, Cash: { l: 0, p: 0 } };
@@ -1083,7 +1116,7 @@ function drawAnalyticsChart() {
 
 // Pro Exports
 function exportJSON() {
-  const blob = new Blob([JSON.stringify({ users, transactions, activityLog }, null, 2)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify({ users, transactions, activityLog, lifetimeMasterTotal }, null, 2)], { type: 'application/json' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `bkash_${new Date().toISOString().slice(0,10)}.json`; a.click();
 }
 function exportCSV() {
@@ -1095,13 +1128,13 @@ function printPDFStatement() { window.print(); }
 
 function deleteAllData() {
   if (currentUserRole !== 'admin') return alert('⚠️ শুধুমাত্র অ্যাডমিন ডাটা মুছতে পারবে!');
-  if (confirm('সব ডাটা মুছে ফেলতে চান?') && prompt('টাইপ করুন DELETE') === 'DELETE') {
+  if (confirm('সব গ্রাহক ও লেনদেন মুছতে চান? (মনে রাখবেন: শুরু থেকে মোট লাইফটাইম লেনদেনের হিসাব অক্ষত থাকবে)') && prompt('টাইপ করুন DELETE') === 'DELETE') {
     users = []; transactions = []; activityLog = []; saveAll();
-    alert('🗑️ সমস্ত তথ্য মুছে ফেলা হয়েছে!');
+    alert('🗑️ সমস্ত বর্তমান ডাটা মুছে ফেলা হয়েছে!');
   }
 }
 
-// Startup
+// Initial Boot
 inDate.value = new Date().toISOString().slice(0, 10);
 initFirebase();
 checkRoleGateway();
