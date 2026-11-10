@@ -596,7 +596,7 @@ function closeCalcModal() {
   document.getElementById('calcModalOverlay').classList.remove('active');
 }
 
-// অটোমেটিক KD দিনার ও ২.৫৫ / ২.৬০ রেটের নিখুঁত হিসাব
+// অটোমেটিক KD দিনার (৪০০ রেটে) ও ২.৫৫ / ২.৬০ রেটের নিখুঁত হিসাব
 function autoCalculateKD() {
   const bdt = parseFloat(document.getElementById('calcBdtInput').value) || 0;
   
@@ -607,21 +607,23 @@ function autoCalculateKD() {
     return;
   }
 
-  // প্রতি হাজারে ২.৫৫ এবং ২.৬০ হিসেবে KD হিসাব
-  // সূত্র: (টাকা / ১০০০) * রেট
+  // ১ KD = ৪০০ ৳ হিসেবে মোট কুয়েতি দিনার (সরাসরি ভাগ)
+  const totalKdAt400 = bdt / 400;
+
+  // প্রতি হাজারে ২.৫৫ এবং ২.৬০ হিসেবে আগের হিসাব (অক্ষত)
   const kd255 = (bdt / 1000) * 2.55;
   const kd260 = (bdt / 1000) * 2.60;
 
-  // ২.৫৫ রেট অনুযায়ী ১ কেডির সমপরিমাণ টাকা
-  const ratePerKd = (1000 / 2.55).toFixed(2);
-  document.getElementById('kdRateHint').textContent = ratePerKd;
+  // রেট টেক্সটে ৪০০ ৳ আপডেট
+  const hintEl = document.getElementById('kdRateHint');
+  if (hintEl) hintEl.textContent = '400';
 
-  // স্ক্রিনে লাইভ মান বসানো:
-  document.getElementById('calc255Display').textContent = kd255.toFixed(3) + ' KD';
-  document.getElementById('calc260Display').textContent = kd260.toFixed(3) + ' KD';
+  // ২.৫৫ এবং ২.৬০ কার্ডের রেজাল্ট প্রদর্শন:
+  document.getElementById('calc255Display').textContent = kd255.toFixed(2) + ' KD';
+  document.getElementById('calc260Display').textContent = kd260.toFixed(2) + ' KD';
   
-  // বড় মাস্টার কার্ডে মোট KD প্রদর্শন (২.৫৫ রেটে আসল দিনার)
-  document.getElementById('calcKdResultDisplay').textContent = kd255.toFixed(3) + ' KD';
+  // বড় মাস্টার কার্ডে ৪০০ রেটের আসল KD প্রদর্শন (যেমন: ১০০০০ টাকা দিলে ২৫.০০০ KD দেখাবে)
+  document.getElementById('calcKdResultDisplay').textContent = totalKdAt400.toFixed(3) + ' KD';
 }
 
 // ==========================================
