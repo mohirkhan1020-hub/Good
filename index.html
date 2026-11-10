@@ -6,9 +6,10 @@
 <meta name="theme-color" content="#e2136e">
 <title>bKash Lenden Manager Pro</title>
 
-<!-- FIREBASE COMPAT SDKs -->
+<!-- FIREBASE COMPAT SDKs (DATABASE + AUTHENTICATION) -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 <style>
   * { margin:0; padding:0; box-sizing:border-box; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; -webkit-tap-highlight-color:transparent; }
@@ -240,14 +241,14 @@
   <div class="gateway-card">
     <div class="logo">৳</div>
     <h2>bKash Manager Pro</h2>
-    <p>আপনি কোন হিসেবে প্রবেশ করতে চান?</p>
+    <p>নিরাপদ ক্লাউড ডাটাবেজ সিস্টেমে স্বাগতম</p>
     <div class="gateway-btns">
       <button class="gw-btn user" onclick="enterAsUser()">
         <span>👤 User Mode (গ্রাহক হিসাব)</span>
         <span>➔</span>
       </button>
       <button class="gw-btn admin" onclick="toggleAdminLoginForm()">
-        <span>🛡️ Admin Mode (মালিক/হিসাবরক্ষক)</span>
+        <span>🛡️ Admin Mode (Firebase Login)</span>
         <span>🔒</span>
       </button>
     </div>
@@ -257,12 +258,12 @@
       <span>👆 Fingerprint / Face ID দিয়ে আনলক</span>
     </button>
 
-    <!-- ADMIN LOGIN FORM -->
+    <!-- FIREBASE AUTH LOGIN FORM -->
     <div class="admin-login-box" id="adminLoginBox">
-      <div style="font-size:11.5px;font-weight:700;margin-bottom:6px;color:#1e3c72;">এডমিন জিমেইল ও পাসওয়ার্ড দিন</div>
-      <input type="email" id="adminEmailInput" placeholder="Admin Gmail">
-      <input type="password" id="adminPassInput" placeholder="Password (ডিফল্ট: 1234)">
-      <button onclick="loginAsAdmin()">লগইন করুন</button>
+      <div style="font-size:11.5px;font-weight:700;margin-bottom:6px;color:#1e3c72;">Firebase Admin Login</div>
+      <input type="email" id="adminEmailInput" placeholder="Firebase Admin Email">
+      <input type="password" id="adminPassInput" placeholder="Firebase Password">
+      <button onclick="loginWithFirebaseAuth()">লগইন করুন</button>
     </div>
   </div>
 </div>
@@ -505,7 +506,7 @@
 </div>
 <script>
 // ==========================================
-// 1. FIREBASE CONFIGURATION & LIVE CLOUD
+// 1. FIREBASE AUTH & LIVE CLOUD SYNC
 // ==========================================
 const firebaseConfig = {
   apiKey: "AIzaSyCx5HpXJyq5Rd3t95TSjrBnieufrCOQ0IY",
@@ -521,10 +522,10 @@ let users = [];
 let transactions = [];
 let activityLog = [];
 
-// 💎 PERMANENT LIFETIME MASTER TURNOVER (NEVER DELETES OR RESETS)
+// 💎 PERMANENT LIFETIME TURNOVER (NEVER RESETS OR DELETES)
 let lifetimeMasterTotal = Number(localStorage.getItem('bkash_lifetime_master_total') || 0);
 
-// Role: 'user' (Read-Only) or 'admin' (Full Control)
+// Current User Role: 'user' (Read-Only) or 'admin' (Authenticated)
 let currentUserRole = sessionStorage.getItem('bkash_role') || null;
 
 let currentFilter = 'all';
@@ -535,23 +536,26 @@ let currentUserId = null;
 let currentSelectedRate = 2.55;
 
 let fbDb = null;
+let fbAuth = null;
 
 function setCloudStatus(t, bg) {
   const el = document.getElementById('cloudStatusBadge');
   if (el) { el.textContent = t; el.style.background = bg; }
 }
 
-// Live 2-Way Realtime Listener from Firebase
+// 2-Way Realtime Listener from Firebase
 function initFirebase() {
   try {
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     fbDb = firebase.database();
+    fbAuth = firebase.auth();
 
     fbDb.ref('.info/connected').on('value', s => {
       if (s.val() === true) setCloudStatus('🟢 Live Cloud', '#28a745');
       else setCloudStatus('🔴 Offline', '#dc3545');
     });
 
+    // Auto-migrate from older paths so NO PREVIOUS DATA IS EVER LOST:
     fbDb.ref('bkash_master_cloud_v5').on('value', snap => {
       const val = snap.val();
       if (val) {
@@ -559,15 +563,22 @@ function initFirebase() {
         transactions = Array.isArray(val.transactions) ? val.transactions : [];
         activityLog = Array.isArray(val.activityLog) ? val.activityLog : [];
         
-        // Take the highest lifetime total so it never decreases
         const remoteLifetime = Number(val.lifetimeMasterTotal || 0);
         if (remoteLifetime > lifetimeMasterTotal) {
           lifetimeMasterTotal = remoteLifetime;
         }
       } else {
-        users = [];
-        transactions = [];
-        activityLog = [];
+        // Fallback check to v4 / v3 if empty
+        fbDb.ref('bkash_master_cloud_v4').once('value', oldSnap => {
+          const oldVal = oldSnap.val();
+          if (oldVal) {
+            users = Array.isArray(oldVal.users) ? oldVal.users : [];
+            transactions = Array.isArray(oldVal.transactions) ? oldVal.transactions : [];
+            activityLog = Array.isArray(oldVal.activityLog) ? oldVal.activityLog : [];
+            lifetimeMasterTotal = Number(oldVal.lifetimeMasterTotal || 0);
+            render();
+          }
+        });
       }
 
       localStorage.setItem('bkash_users', JSON.stringify(users));
@@ -587,7 +598,7 @@ function initFirebase() {
   }
 }
 
-// Master Save Function (Only Admin Can Save to Cloud)
+// Master Save Function (Only Authenticated Admin Can Save)
 function saveAll() {
   if (currentUserRole !== 'admin') {
     alert('⚠️ সাধারণ ইউজাররা কোনো তথ্য পরিবর্তন বা সেভ করতে পারবে না!');
@@ -623,7 +634,7 @@ function forcePushToFirebase() {
 }
 
 // ==========================================
-// 2. BIOMETRIC (FINGERPRINT / FACE ID) SYSTEM
+// 2. BIOMETRIC (FINGERPRINT / FACE ID)
 // ==========================================
 async function setupBiometrics() {
   if (!window.PublicKeyCredential) {
@@ -671,7 +682,7 @@ async function setupBiometrics() {
 
 async function authenticateBiometrics() {
   if (!window.PublicKeyCredential || localStorage.getItem('bkash_bio_enabled') !== 'true') {
-    alert('⚠️ আগে অ্যাডমিন পাসওয়ার্ড দিয়ে ঢুকে সেটিংস থেকে Fingerprint অন করুন!');
+    alert('⚠️ আগে অ্যাডমিন লগইন করে সেটিংস থেকে Fingerprint অন করুন!');
     return;
   }
 
@@ -714,7 +725,7 @@ async function authenticateBiometrics() {
 }
 
 // ==========================================
-// 3. ROLE GATEWAY & ADMIN LOGIN
+// 3. SECURE FIREBASE AUTH & ROLE GATEWAY
 // ==========================================
 function checkRoleGateway() {
   const gate = document.getElementById('roleGateway');
@@ -744,34 +755,43 @@ function toggleAdminLoginForm() {
   document.getElementById('adminLoginBox').classList.toggle('active');
 }
 
-function loginAsAdmin() {
+// 🛡️ SECURE LOGIN USING FIREBASE AUTHENTICATION
+function loginWithFirebaseAuth() {
   const email = document.getElementById('adminEmailInput').value.trim();
   const pass = document.getElementById('adminPassInput').value.trim();
 
-  if (!email || !email.includes('@')) {
-    alert('❌ সঠিক জিমেইল দিন!');
+  if (!email || !pass) {
+    alert('❌ Email এবং Password দিন!');
     return;
   }
 
-  // ডিফল্ট অ্যাডমিন পাসওয়ার্ড: 1234
-  if (pass === '1234') {
-    currentUserRole = 'admin';
-    sessionStorage.setItem('bkash_role', 'admin');
-    sessionStorage.setItem('bkash_admin_email', email);
-    document.getElementById('roleGateway').classList.add('hidden');
-    applyRoleUI();
+  setCloudStatus('🔐 Verifying...', '#1e3c72');
 
-    if (localStorage.getItem('bkash_bio_enabled') !== 'true' && window.PublicKeyCredential) {
-      if (confirm('👆 আপনি কি পরবর্তী সময়ের জন্য Fingerprint / Face ID সেট করতে চান?')) {
-        setupBiometrics();
+  fbAuth.signInWithEmailAndPassword(email, pass)
+    .then((userCredential) => {
+      currentUserRole = 'admin';
+      sessionStorage.setItem('bkash_role', 'admin');
+      sessionStorage.setItem('bkash_admin_email', email);
+      document.getElementById('roleGateway').classList.add('hidden');
+      applyRoleUI();
+      alert('🛡️ Firebase সিকিউর লগইন সফল! স্বাগতম এডমিন।');
+
+      // Auto-prompt to register fingerprint if not already set
+      if (localStorage.getItem('bkash_bio_enabled') !== 'true' && window.PublicKeyCredential) {
+        if (confirm('👆 পরবর্তী সময়ের দ্রুত আনলকের জন্য Fingerprint / Face ID সেট করতে চান?')) {
+          setupBiometrics();
+        }
       }
-    }
-  } else {
-    alert('❌ ভুল পাসওয়ার্ড! সঠিক পাসওয়ার্ড দিন (Default: 1234)');
-  }
+    })
+    .catch((error) => {
+      console.error(error);
+      alert('❌ ভুল Email বা Password! (Firebase Console ➔ Authentication ➔ Users-এ তৈরি করা সঠিক তথ্য দিন)');
+      setCloudStatus('🟢 Live Cloud', '#28a745');
+    });
 }
 
 function switchAccount() {
+  if (fbAuth) fbAuth.signOut();
   sessionStorage.removeItem('bkash_role');
   sessionStorage.removeItem('bkash_admin_email');
   currentUserRole = null;
@@ -848,7 +868,6 @@ function addUser() {
   transactions.push({ id: id + 1, userId: id, type: 'lenden', amount: lenden, date, method, note: 'নতুন গ্রাহক যোগ', time: new Date().toLocaleTimeString() });
   activityLog.push({ action: 'CREATE_USER', name, details: `নতুন গ্রাহক যোগ — ৳${lenden} (${method})`, time: new Date().toLocaleTimeString() });
 
-  // 💎 Add to permanent lifetime master total:
   lifetimeMasterTotal += lenden;
 
   saveAll();
@@ -884,7 +903,6 @@ function saveEdit() {
     transactions.push({ id: Date.now(), userId: u.id, type: 'lenden', amount: addL, date: d, method: lMethod, note: 'ধার বৃদ্ধি', time: tm });
     activityLog.push({ action: 'ADD_LENDEN', name: u.name, details: `নতুন ধার: ৳${addL} (${lMethod})`, time: tm });
 
-    // 💎 Increase permanent lifetime total:
     lifetimeMasterTotal += addL;
   }
   if (addP > 0) {
@@ -899,11 +917,10 @@ function saveEdit() {
 
 function deleteUser(id) {
   if (currentUserRole !== 'admin') return alert('🔒 আপনি সাধারণ ইউজার! কোনো ডাটা ডিলিট করার অনুমতি নেই।');
-  if (!confirm('এই গ্রাহককে মুছে ফেলতে চান? (মনে রাখবেন: শুরু থেকে মোট লেনদেনের হিসাব কখনো মুছবে না)')) return;
+  if (!confirm('এই গ্রাহককে মুছে ফেলতে চান? (মনে রাখবেন: শুরু থেকে মোট লাইফটাইম হিসাব কখনো মুছবে না)')) return;
   const u = users.find(x => x.id === id);
   if (u) activityLog.push({ action: 'DELETE_USER', name: u.name, details: 'গ্রাহক মুছে ফেলা হয়েছে', time: new Date().toLocaleTimeString() });
 
-  // Notice: lifetimeMasterTotal remains completely safe and untouched!
   users = users.filter(x => x.id !== id);
   transactions = transactions.filter(x => x.userId !== id);
 
@@ -954,7 +971,7 @@ function render() {
     return `
       <div class="user-card ${due <= 0 ? 'clear' : 'due'}">
         <div class="user-card-header" onclick="openDetail(${u.id})">
-          <div><div class="name">${u.name}</div><div style="font-size:12px;color:#888;">📱 ${u.mobile}</div></div>
+          <div><div class="name">${u.name}</div><div style="font-size:11px;color:#888;">📱 ${u.mobile}</div></div>
           <span class="status ${due <= 0 ? 'clear' : 'due'}">${due <= 0 ? '✅ Clear' : '⚠️ বাকি'}</span>
         </div>
         <div class="user-card-stats" onclick="openDetail(${u.id})">
@@ -973,13 +990,11 @@ function render() {
   const currentActiveLenden = users.reduce((s, u) => s + u.lenden, 0);
   const totalPaid = users.reduce((s, u) => s + u.paid, 0);
 
-  // Auto-sync lifetime total if current active lenden is higher
   if (currentActiveLenden > lifetimeMasterTotal) {
     lifetimeMasterTotal = currentActiveLenden;
     localStorage.setItem('bkash_lifetime_master_total', lifetimeMasterTotal);
   }
 
-  // Display Permanent Lifetime & Active Balances
   cardLifetimeTotal.textContent = '৳' + lifetimeMasterTotal;
   cardDue.textContent = '৳' + Math.max(0, currentActiveLenden - totalPaid);
   cardLenden.textContent = '৳' + currentActiveLenden;
@@ -1009,9 +1024,9 @@ function renderUserDetail() {
   const txs = transactions.filter(t => t.userId === u.id).reverse();
 
   const adminDetailActions = currentUserRole === 'admin' ? `
-    <div style="display:flex;gap:8px;margin-bottom:14px;">
-      <button class="btn-edit" style="flex:1;padding:10px;border-radius:8px;" onclick="openEditUser(${u.id})">✏️ Edit</button>
-      <button class="btn-del" style="flex:1;padding:10px;border-radius:8px;" onclick="deleteUser(${u.id})">🗑️ Delete</button>
+    <div style="display:flex;gap:6px;margin-bottom:12px;">
+      <button class="btn-edit" style="flex:1;padding:8px;border-radius:8px;" onclick="openEditUser(${u.id})">✏️ Edit</button>
+      <button class="btn-del" style="flex:1;padding:8px;border-radius:8px;" onclick="deleteUser(${u.id})">🗑️ Delete</button>
     </div>
   ` : '';
 
@@ -1019,7 +1034,7 @@ function renderUserDetail() {
     <div class="user-detail-header">
       <div class="avatar">${u.name.charAt(0).toUpperCase()}</div>
       <h2>${u.name}</h2><p>📱 ${u.mobile}</p>
-      <div style="margin-top:10px;font-size:16px;font-weight:700;">মোট বাকি: ৳${Math.max(0, due)}</div>
+      <div style="margin-top:8px;font-size:15px;font-weight:700;">মোট বাকি: ৳${Math.max(0, due)}</div>
     </div>
     ${adminDetailActions}
     <div class="section-title"><span>📱 লেনদেনের ইতিহাস (${txs.length})</span></div>
@@ -1027,8 +1042,8 @@ function renderUserDetail() {
       <div class="bkash-tx" onclick="showReceipt(${t.id})">
         <div class="bkash-icon ${t.type}">${t.type === 'lenden' ? '↓' : '↑'}</div>
         <div class="bkash-info">
-          <div style="font-weight:700;font-size:13px;">${t.type === 'lenden' ? 'ধার গ্রহণ' : 'পরিশোধ/জমা'} (${t.method || '-'})</div>
-          <div style="font-size:11px;color:#888;">${t.date} · ${t.time || ''}</div>
+          <div style="font-weight:700;font-size:12.5px;">${t.type === 'lenden' ? 'ধার গ্রহণ' : 'পরিশোধ/জমা'} (${t.method || '-'})</div>
+          <div style="font-size:10.5px;color:#888;">${t.date} · ${t.time || ''}</div>
         </div>
         <div class="bkash-amount" style="color:${t.type === 'lenden' ? '#dc3545' : '#28a745'}">
           ${t.type === 'lenden' ? '-' : '+'}৳${t.amount}
@@ -1045,8 +1060,8 @@ function renderTxPage() {
       <div class="bkash-tx" onclick="showReceipt(${t.id})">
         <div class="bkash-icon ${t.type}">${t.type === 'lenden' ? '↓' : '↑'}</div>
         <div class="bkash-info">
-          <div style="font-weight:700;font-size:13px;">${u.name}</div>
-          <div style="font-size:11px;color:#888;">${t.date} (${t.method || '-'})</div>
+          <div style="font-weight:700;font-size:12.5px;">${u.name}</div>
+          <div style="font-size:10.5px;color:#888;">${t.date} (${t.method || '-'})</div>
         </div>
         <div class="bkash-amount" style="color:${t.type === 'lenden' ? '#dc3545' : '#28a745'}">
           ${t.type === 'lenden' ? '-' : '+'}৳${t.amount}
@@ -1058,7 +1073,7 @@ function renderTxPage() {
 
 function renderLog() {
   logList.innerHTML = activityLog.slice().reverse().map(l => `
-    <div style="background:#fff;padding:10px 14px;border-radius:10px;margin-bottom:8px;font-size:12px;border-left:3px solid #e2136e;">
+    <div style="background:#fff;padding:9px 12px;border-radius:10px;margin-bottom:8px;font-size:11.5px;border-left:3px solid #e2136e;">
       <div style="display:flex;justify-content:space-between;color:#888;"><span>${l.action}</span><span>${l.time}</span></div>
       <div style="font-weight:700;margin-top:2px;">${l.name}</div>
       <div style="color:#555;">${l.details}</div>
@@ -1128,7 +1143,7 @@ function printPDFStatement() { window.print(); }
 
 function deleteAllData() {
   if (currentUserRole !== 'admin') return alert('⚠️ শুধুমাত্র অ্যাডমিন ডাটা মুছতে পারবে!');
-  if (confirm('সব গ্রাহক ও লেনদেন মুছতে চান? (মনে রাখবেন: শুরু থেকে মোট লাইফটাইম লেনদেনের হিসাব অক্ষত থাকবে)') && prompt('টাইপ করুন DELETE') === 'DELETE') {
+  if (confirm('সব গ্রাহক ও লেনদেন মুছতে চান? (মনে রাখবেন: শুরু থেকে মোট লাইফটাইম হিসাব অক্ষত থাকবে)') && prompt('টাইপ করুন DELETE') === 'DELETE') {
     users = []; transactions = []; activityLog = []; saveAll();
     alert('🗑️ সমস্ত বর্তমান ডাটা মুছে ফেলা হয়েছে!');
   }
